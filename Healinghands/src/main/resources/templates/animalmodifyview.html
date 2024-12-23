@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>동물 수정하기</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #FFF8E1; /* 웜톤 배경색 */
+            color: #5D4037; /* 텍스트 색상 */
+        }
+
+        h1 {
+            color: #db9a1a; /* 타이틀에 따뜻한 색감 추가 */
+        }
+
+        .container {
+            margin: 30px auto;
+            background-color: #FFF3E0;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group label {
+            color: #6D4C41; /* 라벨 텍스트 색상 */
+        }
+
+        .btn-primary {
+            background-color: #bfaa80; /* 버튼 기본 색상 */
+            border-color: #bfaa80;
+            color: #ffffff;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #edab1a; /* 호버 시 색상 */
+            border-color: #edab1a;
+        }
+
+        .btn-danger {
+            background-color: #db9a1a; /* 버튼 색상 */
+            border-color: #db9a1a;
+            color: #ffffff;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-danger:hover {
+            background-color: #bfaa80; /* 호버 시 색상 */
+            border-color: #bfaa80;
+        }
+
+        .back-link a {
+            color: #db9a1a; /* 링크 기본 색상 */
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .back-link a:hover {
+            color: #bfaa80; /* 호버 시 링크 색상 */
+        }
+
+        .card-img-top, .img-thumbnail {
+            width: 150px;
+            height: auto;
+            border-radius: 8px;
+            margin-top: 10px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+    </style>
+</head>
+<body>
+
+<div th:replace="import/header :: header"></div> <!-- 헤더 임포트 -->
+
+<div class="container">
+    <h1>동물 수정하기</h1>
+    <form th:action="@{/animals/modify/{id}(id=${animalDTO.animalId})}" method="POST" th:object="${animalDTO}" enctype="multipart/form-data">
+        <input type="hidden" th:field="*{animalId}" />
+        <img th:src="@{${animalDTO.imageUrl.split(';')[0]}}" class="card-img-top" alt="Animal Image">
+
+        <div class="form-group">
+            <label for="images">이미지</label>
+            <input type="file" class="form-control-file" id="images" name="images" accept="image/*" multiple>
+        </div>
+        <div class="form-group">
+            <label>이름:</label>
+            <input type="text" th:field="*{name}" class="form-control" required />
+        </div>
+        <div class="form-group">
+            <label>종:</label>
+            <input type="text" th:field="*{species}" class="form-control" required />
+        </div>
+        <div class="form-group">
+            <label>품종:</label>
+            <input type="text" th:field="*{breed}" class="form-control" required />
+        </div>
+        <div class="form-group">
+            <label>나이:</label>
+            <input type="number" th:field="*{age}" class="form-control" required />
+        </div>
+        <div class="form-group">
+            <label>성별:</label>
+            <input type="text" th:field="*{gender}" class="form-control" required />
+        </div>
+        <div class="form-group">
+            <label>체중:</label>
+            <input type="number" th:field="*{weight}" class="form-control" step="0.01" required />
+        </div>
+        <div class="form-group">
+            <label>모색:</label>
+            <input type="text" th:field="*{color}" class="form-control" required />
+        </div>
+        <div class="form-group">
+            <label>상태:</label>
+            <input type="text" th:field="*{status}" class="form-control" required />
+        </div>
+        <div class="form-group">
+            <label>구조 날짜:</label>
+            <input type="text" th:field="*{shelterDate}" class="form-control" required />
+        </div>
+        <div class="form-group">
+            <label>예방접종 여부:</label>
+            <input type="checkbox" th:field="*{vaccinated}" />
+        </div>
+        <div class="form-group">
+            <label>입양 가능 여부:</label>
+            <input type="checkbox" th:field="*{adoptable}" />
+        </div>
+        <div class="form-group">
+            <label>중성화 수술 여부:</label>
+            <input type="checkbox" th:field="*{neutered}" />
+        </div>
+        <div class="form-group">
+            <label>상세 설명:</label>
+            <textarea th:field="*{description}" class="form-control"></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary">수정하기</button>
+        <button type="button" class="btn btn-danger" th:onclick="'deleteAnimal(' + ${animalDTO.animalId} + ')'">삭제하기</button>
+    </form>
+
+    <div class="back-link">
+        <a href="/new_family">목록으로 돌아가기</a>
+    </div>
+</div>
+
+<div th:replace="import/footer :: footer"></div> <!-- 푸터 임포트 -->
+<script>
+    document.getElementById('images').addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = document.createElement('img');
+            img.src = e.target.result;
+            img.classList.add('img-thumbnail');
+            document.querySelector('.button-group').insertAdjacentElement('beforebegin', img);
+        };
+        reader.readAsDataURL(file);
+    });
+    function deleteAnimal(animalId) {
+        if (confirm('정말로 이 동물을 삭제하시겠습니까?')) {
+            fetch(`/animals/delete/${animalId}`, {
+                method: 'DELETE'
+            })
+                .then(response => {
+                    if (response.ok) {
+                        alert('동물이 삭제되었습니다.');
+                        window.location.href = '/animals/list'; // 삭제 후 목록 페이지로 리다이렉트
+                    } else {
+                        alert('삭제 중 오류가 발생했습니다.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('서버와의 연결에 문제가 발생했습니다.');
+                });
+        }
+    }
+</script>
+</body>
+</html>

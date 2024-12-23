@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>동물 상세 정보</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    /* 전체 폼 컨테이너 */
+    .container {
+      width: 66.67%; /* 화면의 3분의 2 너비 */
+      margin: 50px auto;
+      background-color: #fff8e7; /* 웜톤 배경색 추가 */
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    /* 카드 스타일 */
+    .animal-detail-card {
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      background-color: #fff4d1;
+    }
+
+    /* 이미지 컨테이너 */
+    .animal-image-container {
+      width: 80%; /* 폼 크기의 5분의 4로 지정 */
+      margin: 0 auto;
+      overflow: hidden;
+      border-radius: 10px;
+      text-align: center; /* 이미지 중앙 정렬 */
+    }
+
+    /* 이미지 크기 */
+    .animal-image {
+      width: 50%;
+      height: auto;
+      object-fit: cover;
+    }
+
+    /* 설명 테이블 스타일 */
+    .animal-info-table {
+      width: 100%;
+      margin-top: 20px;
+      border-collapse: collapse;
+      background-color: #fff8e7;
+    }
+
+    .animal-info-table th, .animal-info-table td {
+      padding: 10px;
+      border: 1px solid #ddd;
+      text-align: left;
+    }
+
+    .animal-info-table th {
+      background-color: #db9a1a;
+      color: white;
+    }
+
+    /* 버튼 스타일 */
+    .action-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .action-buttons .btn-primary {
+      background-color: #db9a1a;
+      border-color: #db9a1a;
+      color: white;
+      flex-grow: 1;
+    }
+
+    .action-buttons .btn-primary:hover {
+      background-color: #edab1a;
+      border-color: #edab1a;
+    }
+
+    .action-buttons .btn-secondary {
+      background-color: #edab1a;
+      border-color: #edab1a;
+      color: white;
+      flex-grow: 1;
+    }
+
+    .action-buttons .btn-secondary:hover {
+      background-color: #db9a1a;
+      border-color: #db9a1a;
+    }
+  </style>
+</head>
+<body>
+<div th:replace="import/header :: header"></div> <!-- 헤더 임포트 -->
+<div class="container" th:object="${animalDTO}">
+  <h2 th:text="${animalDTO.name} + ' 상세 정보'">동물 상세 정보</h2>
+  <div class="animal-detail-card card">
+    <!-- 이미지 컨테이너 -->
+    <div class="animal-image-container">
+      <img th:src="${animalDTO.imageUrl}" class="animal-image" alt="Animal Image">
+    </div>
+    <div class="card-body">
+      <h5 class="card-title" th:text="${animalDTO.name}">동물 이름</h5>
+
+      <!-- 설명 테이블 -->
+      <table class="animal-info-table">
+        <tr>
+          <th>종</th>
+          <td th:text="${animalDTO.species != null ? animalDTO.species : '정보 없음'}">종</td>
+        </tr>
+        <tr>
+          <th>품종</th>
+          <td th:text="${animalDTO.breed != null ? animalDTO.breed : '정보 없음'}">품종</td>
+        </tr>
+        <tr>
+          <th>나이</th>
+          <td th:text="${animalDTO.age}">나이</td>
+        </tr>
+        <tr>
+          <th>체중</th>
+          <td th:text="${animalDTO.weight}">체중</td>
+        </tr>
+        <tr>
+          <th>모색</th>
+          <td th:text="${animalDTO.color != null ? animalDTO.color : '정보 없음'}">모색</td>
+        </tr>
+        <tr>
+          <th>성별</th>
+          <td th:text="${animalDTO.gender != null ? animalDTO.gender : '정보 없음'}">성별</td>
+        </tr>
+        <tr>
+          <th>상태</th>
+          <td th:text="${animalDTO.status != null ? animalDTO.status : '정보 없음'}">상태</td>
+        </tr>
+        <tr>
+          <th>구조 날짜</th>
+          <td th:text="${animalDTO.shelterDate != null ? animalDTO.shelterDate : '정보 없음'}">구조 날짜</td>
+        </tr>
+        <tr>
+          <th>예방접종</th>
+          <td th:text="${animalDTO.vaccinated ? '예' : '아니요'}">예/아니요</td>
+        </tr>
+        <tr>
+          <th>입양 가능</th>
+          <td th:text="${animalDTO.adoptable ? '예' : '아니요'}">예/아니요</td>
+        </tr>
+        <tr>
+          <th>중성화</th>
+          <td th:text="${animalDTO.neutered ? '예' : '아니요'}">예/아니요</td>
+        </tr>
+        <tr>
+          <th>상세 설명</th>
+          <td th:text="${animalDTO.description != null ? animalDTO.description : '정보 없음'}">상세 설명</td>
+        </tr>
+      </table>
+
+      <!-- 액션 버튼들 -->
+      <div class="action-buttons">
+        <a th:href="@{/animals/modify/{id}(id=${animalDTO.animalId})}" class="btn btn-primary">수정</a>
+        <a th:href="@{/adoptions/guideApplication/{id}(id=${animalDTO.animalId})}" class="btn btn-primary">입양 신청하기</a>
+        <a href="/animals/list" class="btn btn-secondary">목록으로 돌아가기</a>
+      </div>
+    </div>
+  </div>
+</div>
+<div th:replace="import/footer :: footer"></div> <!-- 푸터 임포트 -->
+</body>
+</html>

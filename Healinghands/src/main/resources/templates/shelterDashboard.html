@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title> 보호소 운영 </title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #F3E2D1; /* 배경을 웜톤으로 설정 */
+      color: #A67B5B; /* 기본 텍스트 색상 */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 20px;
+      width: 100%;
+    }
+
+    header {
+      background-color: #D5A478; /* 헤더 웜톤 색상 */
+      color: white;
+      padding: 15px;
+      text-align: center;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    h1 {
+      margin: 0;
+    }
+
+    .container {
+      max-width: 1200px;
+      width: 100%;
+      background-color: #FFF8E1; /* 컨테이너 배경 웜톤 */
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      margin: 20px 0;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .section-header h2 {
+      margin: 0;
+      color: #A67B5B; /* 섹션 헤더 텍스트 웜톤 */
+    }
+
+    .section-header .shelter-name {
+      font-size: 1.2em;
+      font-weight: bold;
+      color: #A67B5B; /* 이름 강조 웜톤 색상 */
+    }
+
+    .content {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #F3E2D1; /* 테이블 헤더 웜톤 */
+      color: #A67B5B;
+    }
+
+    /* 기존 버튼 및 그래프 스타일을 유지 */
+    .chart {
+      width: 40%;
+      height: 250px;
+      margin-left: 20px;
+      background-color: #FFF8E9;
+    }
+
+    .chart canvas {
+      width: 100%;
+      height: 100%;
+    }
+
+    .action-button {
+      padding: 8px 12px;
+      background-color: #D5A478;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    .action-button:hover {
+      background-color: #C09065;
+    }
+  </style>
+</head>
+<body>
+
+<div th:replace="~{import/header :: header}"></div>
+<header>
+  <h1><span th:text="${shelterDTO.shelterName}"></span> 보호소 운영</h1>
+</header>
+
+<div class="container">
+  <div class="section-header">
+    <h2>후원 금액 및 후원자 데이터베이스</h2>
+    <span class="shelter-name">보호소 : </span>
+    <span class="shelter-name" th:text="${shelterDTO.shelterName}"></span>
+  </div>
+
+  <!-- 후원자 리스트와 차트 섹션 -->
+  <div class="content">
+    <!-- 후원자 리스트 -->
+    <section style="width: 55%;">
+      <table>
+        <thead>
+        <tr>
+          <th>후원자 이름</th>
+          <th>후원 금액</th>
+          <th>후원 날짜</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="donation : ${donationList}">
+          <td th:text="${donation.userName}">홍길동</td>
+          <td th:text="${donation.amount}">₩1,000,000</td>
+          <td th:text="${#temporals.format(donation.donatedAt, 'yyyy-MM-dd')}">2024-10-10</td>
+        </tr>
+        <!-- 추가 후원자 데이터 -->
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 차트 섹션 -->
+    <div class="chart">
+      <canvas id="donationChart"></canvas>
+    </div>
+  </div>
+
+  <!-- 입양 신청 현황 섹션 -->
+  <section>
+    <h2>입양 신청 현황</h2>
+    <table>
+      <thead>
+      <tr>
+        <th>입양자 이름</th>
+        <th>신청자 Q&A</th>
+        <th>신청 동물 이름</th>
+        <th>승인</th>
+        <th>거부</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="adoption : ${adoptionDTOS.content}">
+        <!-- 입양자 이름 -->
+        <td th:text="${adoption.name}">입양자 이름</td>
+        <!-- 신청자 Q&A -->
+        <td th:text="${adoption.adoptionQA}">신청자 Q&A</td>
+        <!-- 신청 동물 이름 -->
+        <td th:text="${animalNamesMap.containsKey(adoption.animalId) ? animalNamesMap[adoption.animalId] : '이름 없음'}">
+          신청 동물 이름
+        </td>
+        <!-- 승인 버튼 -->
+        <td>
+          <button class="action-button"
+                  th:data-user-id="${adoption.userId}"
+                  th:data-animal-id="${adoption.animalId}"
+                  onclick="approveAdoption(this)">승인</button>
+        </td>
+        <!-- 거부 버튼 -->
+        <td>
+          <button class="action-button" style="background-color: #d9534f;"
+                  th:data-user-id="${adoption.userId}"
+                  th:data-animal-id="${adoption.animalId}"
+                  onclick="rejectAdoption(this)">거부</button>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+
+    <!-- 페이지 네비게이션 -->
+    <div class="pagination">
+        <span th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+            <a th:href="@{/shelters/management(page=${i})}"
+               th:text="${i + 1}"
+               th:classappend="${i == currentPage} ? 'active' : ''"></a>
+        </span>
+    </div>
+  </section>
+  <!-- 봉사활동 신청 현황 섹션 -->
+  <section>
+    <!-- 봉사활동 타입 선택 셀렉트 박스 -->
+      <h3>봉사활동 신청자 현황</h3>
+    <!-- 지원자 리스트 테이블 -->
+    <table>
+      <tbody>
+      <tr th:each="volunteer : ${volunteerUserListDTOs}">
+        <td colspan="4">
+          <h4 th:text="'봉사활동: ' + ${volunteer.volunteerType}"></h4>
+          <table>
+            <thead>
+            <tr>
+              <th>지원자 이름</th>
+              <th>지원자 ID</th>
+              <th>봉사활동 ID</th>
+              <th>승인</th>
+              <th>거부</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="applicant : ${volunteerApplicantsUserMap[volunteer.volunteerId]}"
+                th:id="'applicant-' + ${applicant.userId}"
+                th:data-user-id="${applicant.userId}"
+                th:data-volunteer-id="${volunteer.volunteerId}">
+              <td th:text="${applicant.username}">지원자 이름</td>
+              <td th:text="${applicant.userId}">지원자 ID</td>
+              <td th:text="${volunteer.volunteerId}">봉사활동 ID</td>
+              <td>
+                <button class="action-button"
+                        th:attr="data-user-id=${applicant.userId}, data-volunteer-id=${volunteer.volunteerId}"
+                        onclick="approveApplicant(this)">승인</button>
+              </td>
+              <td>
+                <button class="action-button" style="background-color: #d9534f;"
+                        th:attr="data-user-id=${applicant.userId}, data-volunteer-id=${volunteer.volunteerId}"
+                        onclick="rejectApplicant(this)">거부</button>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+
+  </section>
+
+</div>
+<div th:replace="import/footer :: footer"></div> <!-- 푸터 임포트 -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script th:inline="javascript">
+  /* <![CDATA[ */
+  var donationData = /*[[${donationList}]]*/ [];
+  var donationLabels = donationData.map(donation => donation.userName);
+  var donationAmounts = donationData.map(donation => donation.amount);
+  /* ]]> */
+</script>
+<script>
+  var ctx = document.getElementById('donationChart').getContext('2d');
+  var donationChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: donationLabels,
+      datasets: [{
+        label: '후원 금액 (₩)',
+        data: donationAmounts,
+        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+        borderColor: 'rgba(75, 192, 192, 1)',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
+  });
+
+  function filterApplicants() {
+    const selectedId = document.getElementById("volunteerTypeSelect").value;
+
+    document.querySelectorAll(".applicantRow").forEach(row => {
+      row.classList.add("hidden");
+      if (selectedId === "all" || row.getAttribute("data-volunteer-id") === selectedId) {
+        row.classList.remove("hidden");
+      }
+    });
+  }
+
+  function approveApplicant(button) {
+    const userId = button.getAttribute("data-user-id");
+    const volunteerId = button.getAttribute("data-volunteer-id");
+
+    // 승인 처리 요청을 보냄
+    fetch(`/volunteers/approveApplicant`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: `userId=${userId}&volunteerId=${volunteerId}`
+    })
+            .then(response => {
+              if (!response.ok) {
+                throw new Error("서버 응답 오류: " + response.status);
+              }
+              return response.text();
+            })
+            .then(data => {
+              // 승인 완료 후, 테이블에서 해당 행의 승인 컬럼을 "승인 완료"로 변경
+              const row = button.closest('tr'); // 버튼이 있는 행(tr)을 찾기
+              const approveCell = row.querySelector('td:nth-child(4)'); // 4번째 열 (승인 컬럼)
+              const rejectCell = row.querySelector('td:nth-child(5)'); // 5번째 열 (거부 컬럼)
+
+              // 승인 컬럼에 '승인 완료' 텍스트 추가
+              approveCell.innerText = '승인 완료';
+
+              // 거부 버튼 삭제
+              rejectCell.innerHTML = ''; // 거부 버튼 삭제
+
+              console.log(data); // 서버 응답 출력
+            })
+            .catch(error => console.error("승인 처리 오류:", error));
+  }
+
+  function rejectApplicant(button) {
+    const userId = button.getAttribute("data-user-id");
+    const volunteerId = button.getAttribute("data-volunteer-id");
+    console.log("Rejecting userId:", userId, "volunteerId:", volunteerId); // 로그 추가
+
+    fetch(`/volunteers/rejectApplicant`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: `userId=${userId}&volunteerId=${volunteerId}`
+    })
+            .then(response => {
+              if (!response.ok) {
+                throw new Error("서버 응답 오류: " + response.status);
+              }
+              return response.text();
+            })
+            .then(data => {
+              console.log(data);
+              document.getElementById('applicant-' + userId).remove();
+            })
+            .catch(error => console.error("거부 처리 오류:", error));
+  }
+
+
+  function approveAdoption(button) {
+    const userId = button.getAttribute("data-user-id");
+    const animalId = button.getAttribute("data-animal-id");
+
+    fetch(`/adoptions/approve`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: `userId=${userId}&animalId=${animalId}`
+    })
+            .then(response => {
+              if (!response.ok) throw new Error("승인 요청 실패");
+              document.getElementById('applicant-' + userId).remove();
+            })
+            .catch(error => console.error("승인 처리 오류:", error));
+  }
+
+  function rejectAdoption(button) {
+    const userId = button.getAttribute("data-user-id");
+    const animalId = button.getAttribute("data-animal-id");
+
+    fetch(`/adoptions/reject`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: `userId=${userId}&animalId=${animalId}`
+    })
+            .then(response => {
+              if (!response.ok) throw new Error("거부 요청 실패");
+              document.getElementById('applicant-' + userId).remove();
+            })
+            .catch(error => console.error("거부 처리 오류:", error));
+  }
+</script>
+
+</body>
+</html>

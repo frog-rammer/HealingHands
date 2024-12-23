@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>입양동물 등록</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #FAF3E3; /* 웜톤 배경색 */
+            color: #5D4037; /* 텍스트 색상 */
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            width: 65%; /* 전체 너비의 65%로 설정 */
+            margin: 40px auto;
+            background-color: #FFF8E1; /* 웜톤 배경색 */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: #db9a1a; /* 타이틀 색상 */
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            color: #6D4C41; /* 라벨 텍스트 색상 */
+        }
+
+        .form-control, .form-control-file, .input-group-text, #breed-select {
+            border: 1px solid #bfaa80; /* 필드 테두리 색상 */
+            border-radius: 5px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            padding: 10px;
+            background-color: #FFF7E1;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: center; /* 가운데 정렬 */
+            gap: 20px; /* 버튼 사이 간격 추가 */
+            margin-top: 20px;
+        }
+        .btn-primary {
+            background-color: #bfaa80; /* 버튼 기본 색상 */
+            border-color: #bfaa80;
+            color: #ffffff;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #edab1a; /* 호버 시 색상 */
+            border-color: #edab1a;
+        }
+
+        .btn-secondary {
+            background-color: #db9a1a; /* 버튼 기본 색상 */
+            border-color: #db9a1a;
+            color: #ffffff;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background-color: #bfaa80; /* 호버 시 색상 */
+            border-color: #bfaa80;
+        }
+
+        input[type="radio"], input[type="checkbox"] {
+            margin-right: 5px;
+        }
+
+        input[type="radio"] + label, input[type="checkbox"] + label {
+            margin-right: 15px;
+        }
+
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+<div th:replace="import/header :: header"></div> <!-- 헤더 임포트 -->
+<div class="container mt-5">
+    <h2>입양동물 등록</h2>
+    <form action="/animals/register" method="post" enctype="multipart/form-data" th:object="${animalDTO}">
+        <div class="form-group">
+            <label for="name">이름</label>
+            <input type="text" class="form-control" id="name" name="name" th:field="*{name}" required>
+        </div>
+        <div class="form-group">
+            <label>종류</label>
+            <div>
+                <label><input type="radio" name="species" value="dog" onclick="updateBreeds()" th:field="*{species}"/> 강아지</label>
+                <label><input type="radio" name="species" value="cat" onclick="updateBreeds()" th:field="*{species}"/> 고양이</label>
+                <label><input type="radio" name="species" value="other" onclick="updateBreeds()" th:field="*{species}"/> 기타</label>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="breed-select">품종</label>
+            <select id="breed-select" name="breed" th:field="*{breed}" required>
+                <option value="">품종 선택</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="age">나이</label>
+            <input type="number" class="form-control" id="age" name="age" th:field="*{age}" required min="0">
+        </div>
+        <div class="form-group">
+            <label for="weight">체중</label>
+            <div class="input-group">
+                <input type="number" class="form-control" id="weight" name="weight" th:field="*{weight}" required step="0.1">
+                <div class="input-group-append">
+                    <span class="input-group-text">KG</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="color">모색</label>
+            <input type="text" class="form-control" id="color" name="color" th:field="*{color}" required>
+        </div>
+        <div class="form-group">
+            <label for="gender">성별</label>
+            <select class="form-control" id="gender" name="gender" th:field="*{gender}" required>
+                <option value="MALE">수컷</option>
+                <option value="FEMALE">암컷</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="shelterDate">구조 날짜</label>
+            <input type="date" class="form-control" id="shelterDate" name="shelterDate" th:field="*{shelterDate}" required>
+        </div>
+        <div class="form-group">
+            <label for="status">상태</label>
+            <input type="text" class="form-control" id="status" name="status" th:field="*{status}" required>
+        </div>
+        <div class="form-group">
+            <label>예방접종 여부</label>
+            <div>
+                <input type="radio" id="vaccinatedYes" name="vaccinated" value="true" required th:field="*{vaccinated}"/>
+                <label for="vaccinatedYes">예</label>
+                <input type="radio" id="vaccinatedNo" name="vaccinated" value="false" required th:field="*{vaccinated}" checked/>
+                <label for="vaccinatedNo">아니요</label>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>입양 가능 여부</label>
+            <div>
+                <input type="radio" id="adoptableYes" name="adoptable" value="true" required th:field="*{adoptable}"/>
+                <label for="adoptableYes">예</label>
+                <input type="radio" id="adoptableNo" name="adoptable" value="false" required th:field="*{adoptable}" checked/>
+                <label for="adoptableNo">아니요</label>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>중성화 여부</label>
+            <div>
+                <input type="radio" id="neuteredYes" name="neutered" value="true" required th:field="*{neutered}"/>
+                <label for="neuteredYes">예</label>
+                <input type="radio" id="neuteredNo" name="neutered" value="false" required th:field="*{neutered}" checked/>
+                <label for="neuteredNo">아니요</label>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="description">상세 설명</label>
+            <textarea class="form-control" id="description" name="description" th:field="*{description}" rows="3" required></textarea>
+        </div>
+        <div class="form-group">
+            <label for="images">이미지</label>
+            <input type="file" class="form-control-file" id="images" name="images" accept="image/*" multiple>
+        </div>
+        <div class="button-group">
+            <button type="submit" class="btn btn-primary">등록하기</button>
+            <a href="/animals/list" class="btn btn-secondary">목록으로 돌아가기</a>
+        </div>
+    </form>
+</div>
+<div th:replace="import/footer :: footer"></div> <!-- 푸터 임포트 -->
+
+<script>
+    const dogBreeds = [
+        { value: '믹스견', text: '믹스견' },
+        { value: '푸들', text: '푸들' },
+        { value: '말티즈', text: '말티즈' },
+        { value: '포메라니안', text: '포메라니안' },
+        { value: '시츄', text: '시츄' },
+        { value: '닥스훈트', text: '닥스훈트' },
+        { value: '리트리버', text: '리트리버' },
+        { value: '롯트와일러', text: '롯트와일러' },
+        { value: '비숑', text: '비숑' },
+        { value: '시바견', text: '시바견' },
+        { value: '프렌치불독', text: '프렌치불독' },
+        { value: '진도', text: '진도' }
+    ];
+
+    const catBreeds = [
+        { value: '페르시안', text: '페르시안' },
+        { value: '샴', text: '샴' },
+        { value: '코리안숏헤어', text: '코리안숏헤어' },
+        { value: '배회고양이', text: '배회고양이' }
+    ];
+
+    const otherBreeds = [
+        { value: '햄스터', text: '햄스터' },
+        { value: '앵무새', text: '앵무새' }
+    ];
+
+    function updateBreeds() {
+        const breedSelect = document.getElementById('breed-select');
+        const selectedSpecies = document.querySelector('input[name="species"]:checked').value;
+
+        breedSelect.innerHTML = '<option value="">품종 선택</option>';
+
+        if (selectedSpecies === 'dog') {
+            dogBreeds.forEach(breed => {
+                const option = document.createElement('option');
+                option.value = breed.value;
+                option.textContent = breed.text;
+                breedSelect.appendChild(option);
+            });
+        } else if (selectedSpecies === 'cat') {
+            catBreeds.forEach(breed => {
+                const option = document.createElement('option');
+                option.value = breed.value;
+                option.textContent = breed.text;
+                breedSelect.appendChild(option);
+            });
+        } else if (selectedSpecies === 'other') {
+            otherBreeds.forEach(breed => {
+                const option = document.createElement('option');
+                option.value = breed.value;
+                option.textContent = breed.text;
+                breedSelect.appendChild(option);
+            });
+        }
+    }
+</script>
+</body>
+</html>

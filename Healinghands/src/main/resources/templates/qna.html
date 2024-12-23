@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Q&A 게시판</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #FAF3E3; /* 배경을 웜톤으로 변경 */
+        }
+
+        .container {
+            width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #FFF7E1; /* 컨테이너 배경을 웜톤으로 변경 */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        h2 {
+            color: #A67B5B; /* 웜톤 텍스트 색상 */
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .search {
+            margin-top: 50px;
+            display: flex;
+            justify-content: center; /* 중앙 정렬 */
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+
+        .search input[type="text"] {
+            width: 400px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+
+        .search button {
+            padding: 10px 20px;
+            background-color: #D5A478; /* 웜톤 색상 */
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .search button:hover {
+            background-color: #C09065;
+        }
+
+        .btn-container {
+            text-align: right;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            background-color: #D5A478; /* 웜톤 색상 */
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .btn:hover {
+            background-color: #C09065;
+        }
+
+        .qa-list {
+            margin-top: 30px;
+            margin-bottom: 20px;
+        }
+
+        .qa-list h1 {
+            font-size: 1.5em;
+            color: #A67B5B;
+            text-align: center;
+        }
+
+        .qa-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+            background-color: #FAF3E3;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        .qa-item a {
+            text-decoration: none;
+            color: #A67B5B; /* 웜톤 텍스트 색상 */
+            font-size: 1.1em;
+            font-weight: bold;
+            flex-grow: 1;
+        }
+
+        .qa-item a:hover {
+            text-decoration: underline;
+        }
+
+        .qa-meta {
+            display: flex;
+            flex-direction: column;
+            text-align: right;
+            color: #666;
+            margin-left: 10px;
+            font-size: 0.9em;
+        }
+
+        .qa-user, .qa-date {
+            margin-bottom: 3px;
+        }
+
+        /* 페이지네이션 스타일 */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .pagination button {
+            padding: 8px 16px;
+            background-color: #D5A478; /* 웜톤 버튼 색상 */
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .pagination button:hover {
+            background-color: #C09065;
+        }
+
+        .pagination button:disabled {
+            background-color: #F3E2D1;
+            color: #B8B8B8;
+            cursor: default;
+        }
+
+        .pagination span {
+            font-weight: bold;
+        }
+
+    </style>
+
+    </style>
+</head>
+<body>
+<div th:replace="import/header :: header"></div> <!-- 헤더 임포트 -->
+<div class="container">
+    <h2>Q&A 게시판</h2>
+
+    <div class="search">
+        <form th:action="@{/inquiry/list}" method="get">
+            <input type="text" name="keyword" placeholder="제목명 및 작성자명 검색" th:value="${keyword}">
+            <button type="submit" class="search-btn">검색</button>
+        </form>
+    </div>
+
+    <!-- 문의하기 버튼 -->
+    <div class="btn-container">
+        <a th:href="@{/inquiry/new}">
+            <button class="btn">문의하기</button>
+        </a>
+    </div>
+
+    <div class="qa-list">
+        <h1>문의 목록</h1>
+
+        <!-- 문의 리스트 항목 반복 -->
+        <div th:if="${#lists.isEmpty(inquiryPage.content)}">
+            <p>등록된 문의가 없습니다.</p>
+        </div>
+        <div th:unless="${#lists.isEmpty(inquiryPage.content)}">
+            <div th:each="inquiry : ${inquiryPage}" class="qa-item">
+                <a th:href="@{/inquiry/detail/{id}(id=${inquiry.inquiryId})}" th:text="${inquiry.title}"></a>
+                <div class="qa-meta">
+                    <span class="qa-user">
+                        작성자: <span th:text="${inquiry.userId}"></span>
+                    </span>
+                    <span class="qa-date">
+                        작성일: <span th:text="${#temporals.format(inquiry.createdAt, 'yyyy-MM-dd HH:mm')}"></span>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="pagination">
+        <button th:if="${currentPage > 0}"
+                th:href="@{/animals/list(page=${currentPage - 1}, size=${inquiryPage.size})}">이전</button>
+
+        <span th:text="'페이지 ' + (${currentPage + 1}) + ' / ' + ${totalPages}"></span>
+
+        <button th:if="${currentPage + 1 < totalPages}"
+                th:href="@{/inquiry/list(page=${currentPage + 1}, size=${inquiryPage.size})}">다음</button>
+    </div>
+
+</div>
+<!-- 페이지네이션 네비게이션 -->
+
+<div th:replace="import/footer :: footer"></div><!-- 푸터 임포트 -->
+</body>
+</html>

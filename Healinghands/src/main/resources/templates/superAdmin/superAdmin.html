@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>관리자 대시보드</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        /* 기본 스타일 */
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #FAF3E3; /* 배경 웜톤 */
+        }
+
+        h1, h2 {
+            color: #A67B5B; /* 웜톤 텍스트 색상 */
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* 대시보드 스타일 */
+        .dashboard {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .card {
+            padding: 1.5rem;
+            background-color: #FFF7E1; /* 카드 배경색 웜톤 */
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border: 1px solid #ddd;
+        }
+
+        .card h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group .form-control {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        /* 테이블 스타일 */
+        .table {
+            width: 100%;
+            margin-top: 1rem;
+            background-color: #FFF7E1; /* 테이블 배경 웜톤 */
+        }
+
+        .table th, .table td {
+            text-align: center;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            color: #A67B5B; /* 텍스트 웜톤 색상 */
+        }
+
+        .table th {
+            background-color: #FAF3E3; /* 테이블 헤더 배경색 웜톤 */
+        }
+
+        .table td {
+            vertical-align: middle;
+        }
+
+        .table img {
+            width: 100px;
+            height: auto;
+        }
+
+        /* 버튼 스타일 */
+        .btn {
+            font-size: 14px;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+        }
+
+        .btn-outline-secondary {
+            color: #A67B5B;
+            border-color: #D5A478; /* 웜톤 버튼 테두리 */
+        }
+
+        .btn-outline-secondary:hover {
+            background-color: #D5A478;
+            color: #fff;
+        }
+
+        .btn-success {
+            background-color: #A67B5B;
+            color: #fff;
+            border: none;
+        }
+
+        .btn-success:hover {
+            background-color: #8C6749; /* 다크한 웜톤 */
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            color: #fff;
+            border: none;
+        }
+
+        .btn-danger:hover {
+            background-color: #b72c3b;
+        }
+
+        /* 페이지네이션 스타일 */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+
+        .pagination .page-item .page-link {
+            color: #A67B5B;
+            border: 1px solid #D5A478;
+            margin: 0 0.25rem;
+        }
+
+        .pagination .page-item .page-link:hover {
+            background-color: #D5A478;
+            color: #fff;
+        }
+
+        /* 차트 셀렉트 박스 스타일 */
+        #monthSelect, #yearSelect {
+            width: 200px;
+            margin-bottom: 1rem;
+            color: #A67B5B;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .col-md-12{
+            margin: 20px 0px;
+        }
+    </style>
+
+</head>
+<body>
+<div th:replace="import/header :: header"></div>
+<div class="container mt-5 dashboard">
+    <h1 class="text-center">관리자 대시보드</h1>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <h2>보호소 신청자 리스트</h2>
+                <div class="input-group mb-3">
+                    <!-- 보호소 신청자 리스트 검색 폼 -->
+                    <form th:action="@{/superadmin/admin/dashboard}" method="get">
+                        <input type="text" class="form-control" placeholder="보호소 신청자 이름 검색" name="waitingShelterQuery" th:value="${waitingShelterQuery}">
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-secondary" type="submit">검색</button>
+                        </div>
+                    </form>
+                </div>
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th>보호소 ID</th>
+                        <th>보호소 이름</th>
+                        <th>연락처</th>
+                        <th>운영시간</th>
+                        <th>보호 동물 수</th>
+                        <th>보호소 소개</th>
+                        <th>승인/거부</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="shelterApp : ${waitingShelterList}">
+                        <td th:text="${shelterApp.shelterId}"></td>
+                        <td th:text="${shelterApp.shelterName}"></td>
+                        <td th:text="${shelterApp.contactInfo}"></td>
+                        <td th:text="${shelterApp.operatingHours}"></td>
+                        <td th:text="${shelterApp.animalCount}"></td>
+                        <td th:text="${shelterApp.services}"></td>
+                        <td>
+                            <form th:action="@{/superadmin/shelter/approve/{id}(id=${shelterApp.shelterId})}" method="post" style="display:inline-block;">
+                                <button class="btn btn-success btn-sm" type="submit">승인</button>
+                            </form>
+                            <form th:action="@{/superadmin/shelter/reject/{id}(id=${shelterApp.shelterId})}" method="post" style="display:inline-block;">
+                                <button class="btn btn-danger btn-sm" type="submit">거부</button>
+                            </form>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <nav>
+                    <ul class="pagination">
+                        <li th:each="pageNum : ${#numbers.sequence(1, waitingShelterTotalPages)}" class="page-item">
+                            <a class="page-link" th:href="@{/superadmin/admin/dashboard(page=${pageNum - 1})}" th:text="${pageNum}"></a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="card">
+                <h2>현재 등록된 보호소 리스트</h2>
+                <div class="input-group mb-3">
+                    <form th:action="@{/superadmin/admin/dashboard}" method="get">
+                        <input type="text" class="form-control" placeholder="보호소 이름 검색" name="shelterQuery" th:value="${shelterQuery}">
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-secondary" type="submit">검색</button>
+                        </div>
+                    </form>
+                </div>
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th>보호소 ID</th>
+                        <th>보호소 이름</th>
+                        <th>연락처</th>
+                        <th>운영시간</th>
+                        <th>보호 동물 수</th>
+                        <th>보호소 소개</th>
+                        <th>보호소 취소</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="shelter : ${shelterList}">
+                        <td th:text="${shelter.shelterId}"></td>
+                        <td th:text="${shelter.shelterName}"></td>
+                        <td th:text="${shelter.contactInfo}"></td>
+                        <td th:text="${shelter.operatingHours}"></td>
+                        <td th:text="${shelter.animalCount}"></td>
+                        <td th:text="${shelter.services}"></td>
+                        <td>
+                            <form th:action="@{/superadmin/shelter/delete/{id}(id=${shelter.shelterId})}" method="post">
+                                <button class="btn btn-danger btn-sm" type="submit">취소</button>
+                            </form>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <nav>
+                    <ul class="pagination">
+                        <li th:each="pageNum : ${#numbers.sequence(1, totalPages)}" class="page-item">
+                            <a class="page-link" th:href="@{/superadmin/admin/dashboard(page=${pageNum - 1})}" th:text="${pageNum}"></a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="card">
+                <h2>가입자 리스트</h2>
+                <div class="input-group mb-3">
+                    <form th:action="@{/superadmin/admin/dashboard}" method="get">
+                        <input type="text" class="form-control" placeholder="가입자 검색하기" name="userQuery" th:value="${userQuery}">
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-secondary" type="submit">검색</button>
+                        </div>
+                    </form>
+                </div>
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th>가입자 ID</th>
+                        <th>가입자 이름</th>
+                        <th>이메일</th>
+                        <th>연락처</th>
+                        <th>가입일</th>
+                        <th>가입 취소</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="user : ${userList}">
+                        <td th:text="${user.userId}"></td>
+                        <td th:text="${user.username}"></td>
+                        <td th:text="${user.email}"></td>
+                        <td th:text="${user.phone}"></td>
+                        <td th:text="${user.creationDate}"></td>
+                        <td>
+                            <form th:action="@{/superadmin/users/delete/{id}(id=${user.userId})}" method="post">
+                                <button class="btn btn-danger btn-sm" type="submit">취소</button>
+                            </form>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <nav>
+                    <ul class="pagination">
+                        <li th:each="pageNum : ${#numbers.sequence(1, userTotalPages)}" class="page-item">
+                            <a class="page-link" th:href="@{/superadmin/admin/dashboard(userPage=${pageNum - 1})}" th:text="${pageNum}"></a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12">
+        <div class="card">
+            <h2>일별 접속자 수 통계 차트</h2>
+            <select id="monthSelect" class="form-control mb-3">
+                <option value="1">1월</option>
+                <option value="2">2월</option>
+                <option value="3">3월</option>
+                <option value="4">4월</option>
+                <option value="5">5월</option>
+                <option value="6">6월</option>
+                <option value="7">7월</option>
+                <option value="8">8월</option>
+                <option value="9">9월</option>
+                <option value="10">10월</option>
+                <option value="11">11월</option>
+                <option value="12">12월</option>
+            </select>
+            <canvas id="dailyVisitorsChart" width="400" height="200"></canvas>
+        </div>
+    </div>
+
+    <div class="col-md-12">
+        <div class="card">
+            <h2>월별 가입자 수 통계 차트</h2>
+            <select id="yearSelect" class="form-control mb-3">
+                <option value="2021">2021년</option>
+                <option value="2022">2022년</option>
+                <option value="2023">2023년</option>
+                <option value="2024">2024년</option>
+                <option value="2025">2025년</option>
+            </select>
+            <canvas id="monthlyUsersChart" width="400" height="200"></canvas>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    document.addEventListener('DOMContentLoaded', function () {
+        // 일별 접속자 수 통계 차트
+        let dailyVisitorsData = /*[[${dailyVisitors}]]*/ [];
+        const dailyVisitorsCtx = document.getElementById('dailyVisitorsChart').getContext('2d');
+        let dailyVisitorsChart = new Chart(dailyVisitorsCtx, {
+            type: 'line',
+            data: {
+                labels: Array.from({length: 31}, (_, i) => `${i + 1}일`),
+                datasets: [{
+                    label: '일별 접속자 수',
+                    data: dailyVisitorsData,
+                    backgroundColor: 'rgba(0, 123, 255, 0.5)',
+                    borderColor: 'rgba(0, 123, 255, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        document.getElementById('monthSelect').addEventListener('change', function () {
+            const selectedMonth = this.value;
+            // 비동기로 새로운 데이터를 불러오는 로직
+            fetch(`/superadmin/api/visitors?month=${selectedMonth}`)
+                .then(response => response.json())
+                .then(data => {
+                    dailyVisitorsData = data;
+                    dailyVisitorsChart.data.datasets[0].data = dailyVisitorsData;
+                    dailyVisitorsChart.update();
+                })
+                .catch(error => console.error('Error fetching data:', error));
+        });
+
+        // 월별 가입자 수 통계 차트
+        let monthlyUsersData = [];
+        const monthlyUsersCtx = document.getElementById('monthlyUsersChart').getContext('2d');
+        let monthlyUsersChart = new Chart(monthlyUsersCtx, {
+            type: 'bar',
+            data: {
+                labels: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+                datasets: [{
+                    label: '월별 가입자 수',
+                    data: monthlyUsersData,
+                    backgroundColor: 'rgba(40, 167, 69, 0.5)',
+                    borderColor: 'rgba(40, 167, 69, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // 연도 선택 시 이벤트 리스너
+        document.getElementById('yearSelect').addEventListener('change', function () {
+            const selectedYear = this.value;
+            // 비동기로 해당 연도에 맞는 데이터를 불러오는 로직
+            fetch(`/superadmin/api/users?year=${selectedYear}`)
+                .then(response => response.json())
+                .then(data => {
+                    // 데이터 업데이트 및 차트 갱신
+                    monthlyUsersData = data;
+                    monthlyUsersChart.data.datasets[0].data = monthlyUsersData;
+                    monthlyUsersChart.update();
+                })
+                .catch(error => console.error('Error fetching data:', error));
+        });
+
+        // 페이지 로드 시 현재 연도에 맞는 데이터 불러오기
+        const currentYear = new Date().getFullYear();
+        document.getElementById('yearSelect').value = currentYear;
+        fetch(`/superadmin/api/users?year=${currentYear}`)
+            .then(response => response.json())
+            .then(data => {
+                monthlyUsersData = data;
+                monthlyUsersChart.data.datasets[0].data = monthlyUsersData;
+                monthlyUsersChart.update();
+            })
+            .catch(error => console.error('Error fetching data:', error));
+    });
+    /*]]>*/
+</script>
+</body>
+</html>

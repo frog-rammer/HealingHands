@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>회원가입</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #FAF3E3; /* 배경 웜톤 */
+        }
+
+        .content {
+            margin: 40px 0;
+        }
+
+        .signup-form {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            max-width: 50%;
+            margin: 0 auto;
+        }
+
+        .signup-title {
+            text-align: center;
+            font-size: 24px;
+            color: #5D4037;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #5D4037;
+            font-size: 16px;
+        }
+
+        .form-input {
+            width: calc(100% - 120px);
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 15px;
+        }
+
+        .form-button {
+            background-color: #bfaa80;
+            color: #fff;
+            border: none;
+            padding: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 10px;
+            width: 100px;
+            text-align: center;
+            font-size: 15px;
+            transition: background-color 0.3s ease;
+        }
+
+        .form-button:hover {
+            background-color: #a69366;
+        }
+
+        .submit-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .password-error {
+            color: red;
+            display: none;
+            font-size: 14px;
+        }
+
+        .address-container {
+            display: flex;
+            align-items: center;
+        }
+
+        #loginhref {
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+            color: #5D4037;
+            text-decoration: none;
+            font-size: 16px;
+            transition: color 0.3s ease;
+        }
+
+        #loginhref:hover {
+            color: #a69366;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<div th:replace="import/header :: header"></div>
+
+<div class="content">
+    <form id="signupForm" class="signup-form" action="/users/signup" method="post" th:object="${userDTO}">
+        <h1 class="signup-title">회원가입</h1>
+
+        <div class="form-group">
+            <label class="form-label">이름:</label>
+            <input type="text" class="form-input" th:field="*{username}" name="username" required />
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">아이디:</label>
+            <div class="address-container">
+                <input type="text" class="form-input" th:field="*{userId}" name="userId" required />
+                <button type="button" class="form-button" onclick="checkUserId()">ID 중복 조회</button>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">비밀번호:</label>
+            <input type="password" class="form-input" th:field="*{password}" name="password" id="password" required />
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">비밀번호 확인:</label>
+            <input type="password" class="form-input" name="confirm_password" id="confirm_password" required oninput="checkPasswordMatch()" />
+            <span class="password-error" id="passwordError">비밀번호가 일치하지 않습니다.</span>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">이메일:</label>
+            <input type="email" class="form-input" th:field="*{email}" name="email" required />
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">휴대폰 번호:</label>
+            <input type="tel" class="form-input" th:field="*{phone}" name="phone" required />
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">생년월일:</label>
+            <input type="date" class="form-input" th:field="*{birthdate}" name="birthdate" required />
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="address">주소</label>
+            <div class="address-container">
+                <input type="text" class="form-input" id="address" placeholder="주소 검색을 통해 주소를 입력하세요" required readonly>
+                <button type="button" class="form-button" onclick="findPostcode()">주소 검색</button>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="detail_address">상세주소</label>
+            <input type="text" class="form-input" id="detail_address" placeholder="상세주소를 입력하세요" oninput="updateCombinedAddress()">
+        </div>
+
+        <input type="hidden" id="combined_address" th:field="*{userAddress}" name="userAddress">
+
+        <div class="submit-container">
+            <button type="submit" class="form-button">가입하기</button>
+        </div>
+        <a id="loginhref" href="/login">로그인 페이지로</a>
+    </form>
+</div>
+
+<div th:replace="import/footer :: footer"></div>
+
+<script>
+    function findPostcode() {
+        window.open('/address', '주소 검색', 'width=600,height=400');
+    }
+
+    function updateCombinedAddress() {
+        const address = document.getElementById('address').value;
+        const detailAddress = document.getElementById('detail_address').value;
+        const combinedAddress = address + ' ' + detailAddress;
+        document.getElementById('combined_address').value = combinedAddress.trim();
+    }
+
+    function checkPasswordMatch() {
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirm_password').value;
+        const errorMessage = document.getElementById('passwordError');
+
+        if (password !== confirmPassword) {
+            errorMessage.style.display = 'block';
+        } else {
+            errorMessage.style.display = 'none';
+        }
+    }
+
+    function checkUserId() {
+        const userId = $("input[name='userId']").val();
+
+        if (!userId) {
+            alert("아이디를 입력하세요.");
+            return;
+        }
+
+        $.ajax({
+            url: '/users/checkUserId',
+            method: 'GET',
+            data: { userId: userId },
+            success: function(response) {
+                alert(response ? "사용 가능한 아이디입니다." : "이미 사용 중인 아이디입니다.");
+            },
+            error: function() {
+                alert("오류가 발생했습니다. 다시 시도해주세요.");
+            }
+        });
+    }
+
+    $(document).ready(function() {
+        $('#signupForm').on('submit', function(e) {
+            const password = $('#password').val();
+            const confirmPassword = $('#confirm_password').val();
+
+            if (password !== confirmPassword) {
+                alert("비밀번호가 일치하지 않습니다. 다시 입력해주세요.");
+                e.preventDefault();
+                return;
+            }
+
+            e.preventDefault();
+            $.ajax({
+                url: $(this).attr('action'),
+                method: $(this).attr('method'),
+                data: $(this).serialize(),
+                success: function() {
+                    alert("회원 가입이 완료되었습니다. 로그인 해주세요.");
+                    window.location.href = '/users/login';
+                },
+                error: function() {
+                    alert("회원가입 중 오류가 발생했습니다. 다시 시도해주세요.");
+                }
+            });
+        });
+    });
+</script>
+</body>
+</html>

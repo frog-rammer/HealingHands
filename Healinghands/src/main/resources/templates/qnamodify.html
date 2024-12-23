@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>문의 수정</title>
+    <style>
+        /* 공통 스타일 */
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #FAF3E3; /* 웜톤 배경 */
+        }
+
+        /* 헤더와 푸터 */
+        #page-header, #page-footer {
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* 메인 컨테이너 */
+        #inquiry-container {
+            width: 100%;
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 30px;
+            background-color: #FFF8E1;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 제목 스타일 */
+        .inquiry-title {
+            color: #db9a1a;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        /* 폼 스타일 */
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .label-text {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #6D4C41;
+        }
+
+        .input-field, .select-field, .textarea-field {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #bfaa80;
+            border-radius: 8px;
+            background-color: #FFF7E1;
+            font-size: 15px;
+            box-sizing: border-box;
+        }
+
+        /* 버튼 컨테이너 */
+        .button-group {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        /* 버튼 스타일 */
+        .button-submit, .button-cancel {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            transition: background-color 0.3s ease;
+            color: #ffffff;
+        }
+
+        .button-submit {
+            background-color: #bfaa80;
+        }
+
+        .button-submit:hover {
+            background-color: #a69366;
+        }
+
+        .button-cancel {
+            background-color: #db9a1a;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .button-cancel:hover {
+            background-color: #bfaa80;
+        }
+    </style>
+</head>
+<body>
+<div id="page-header" th:replace="import/header :: header"></div> <!-- 헤더 임포트 -->
+
+<div id="inquiry-container">
+    <h2 class="inquiry-title">문의 수정</h2>
+    <form method="post" th:action="@{/inquiry/edit2/{id}(id=${inquiryDTO.inquiryId})}" th:object="${inquiryDTO}">
+        <div class="input-group">
+            <label for="inquiry-title" class="label-text">제목</label>
+            <input th:field="*{title}" type="text" id="inquiry-title" class="input-field" placeholder="제목을 입력하세요" required>
+        </div>
+        <div class="input-group">
+            <label for="inquiry-type" class="label-text">유형</label>
+            <select th:field="*{type}" id="inquiry-type" class="select-field">
+                <option value="입양 문의">입양 문의</option>
+                <option value="보호소 신청 문의">보호소 신청 문의</option>
+                <option value="기타 문의">기타 문의</option>
+            </select>
+        </div>
+        <div class="input-group">
+            <label for="inquiry-content" class="label-text">내용</label>
+            <textarea th:field="*{content}" id="inquiry-content" class="textarea-field" rows="5" placeholder="문의 내용을 입력하세요"></textarea>
+        </div>
+        <div class="button-group">
+            <input type="submit" class="button-submit" value="수정">
+            <a href="/inquiry/list" class="button-cancel">취소</a>
+        </div>
+    </form>
+</div>
+
+<div id="page-footer" th:replace="import/footer :: footer"></div> <!-- 푸터 임포트 -->
+</body>
+</html>

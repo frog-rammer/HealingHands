@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>마이페이지</title>
+    <style>
+        /* 기존 스타일 */
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #FAF3E3; /* 배경을 웜톤으로 변경 */
+        }
+
+        header, footer {
+            background-color: #FFF7E1; /* 웜톤 배경색 */
+            padding: 20px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex-grow: 1;
+            padding: 20px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .profile-section {
+            max-width: 600px;
+            width: 100%;
+            padding: 20px;
+            background-color: #FAF3E3; /* 프로필 섹션 배경색 웜톤으로 변경 */
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .profile-section h2, .profile-section h3 {
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #A67B5B; /* 웜톤 텍스트 색상 */
+        }
+
+        .profile-section p {
+            margin: 10px 0;
+            font-size: 16px;
+            color: #A67B5B; /* 웜톤 텍스트 색상 */
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .pagination button {
+            padding: 8px 16px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #D5A478; /* 웜톤 버튼 색상 */
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .pagination button:hover {
+            background-color: #C09065; /* 웜톤 hover 색상 */
+        }
+
+        .profile-section input[type="submit"],
+        .profile-section button {
+            display: block;
+            width: 100%;
+            margin-top: 15px;
+            padding: 10px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #D5A478; /* 웜톤 버튼 색상 */
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .profile-section input[type="submit"]:hover,
+        .profile-section button:hover {
+            background-color: #C09065; /* 웜톤 hover 색상 */
+        }
+
+        .delete-button {
+            background-color: #dc3545; /* 회원탈퇴 버튼 색상 */
+        }
+
+        /* Ensure footer is at the bottom */
+        footer {
+            width: 100%;
+            margin-top: auto;
+        }
+
+        /* 한 줄 정렬 스타일 */
+        .inline-form {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .inline-form label {
+            white-space: nowrap;
+        }
+
+        .inline-form input[type="password"],
+        .inline-form button[type="submit"] {
+            height: 40px; /* 동일한 높이 설정 */
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        .inline-form input[type="password"] {
+            padding: 0 10px; /* 수평 padding만 설정 */
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            flex: 1;
+        }
+
+        .inline-form button[type="submit"] {
+            padding: 0 10px; /* 수평 padding만 설정 */
+            color: #fff;
+            background-color: #D5A478;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .inline-form button[type="submit"]:hover {
+            background-color: #C09065;
+        }
+    </style>
+</head>
+<body>
+
+<div th:replace="import/header :: header"></div> <!-- 헤더 임포트 -->
+
+<main>
+    <!-- 마이페이지 조회용 폼 -->
+    <div class="profile-section"  th:object="${my}">
+        <h2>회원정보</h2>
+        <p>아이디: <span th:text="${my.userId}"></span></p>
+        <p>이름: <span th:text="${my.username}"></span></p>
+        <p>주소: <span th:text="${my.userAddress}"></span></p>
+        <p>회원 유형:
+            <span th:if="${my.userType == 'USER'}">개인회원</span>
+            <span th:if="${my.userType == 'SHELTER'}">보호소운영자</span>
+        </p>
+        <p>이메일: <span th:text="${my.email}"></span></p>
+        <p>전화번호: <span th:text="${my.phone}"></span></p>
+        <p>생년월일: <span th:text="${my.birthdate}"></span></p>
+        <p>가입일: <span th:text="${my.creationDate}"></span></p>
+
+
+        <h2>프로필 수정</h2>
+        <form action="/users/mypage/confirmUpdate" method="post" class="inline-form">
+            <label for="password">비밀번호 입력:</label>
+            <input type="password" id="password" name="password" required>
+            <button type="submit" >확인</button>
+        </form>
+
+
+
+        <div>
+            <h3>Q&A 문의 내역</h3>
+            <ul th:if="${#lists.isEmpty(inquiryPage2.content)}">
+                <p>등록된 문의가 없습니다.</p>
+            </ul>
+            <ul th:unless="${#lists.isEmpty(inquiryPage2.content)}">
+                <li th:each="inquiry : ${inquiryPage2.content}">
+                    <a th:href="@{/inquiry/detail/{id}(id=${inquiry.inquiryId})}" th:text="${inquiry.title}"></a>
+                </li>
+            </ul>
+            <div class="pagination">
+                <button th:if="${inquiryCurrentPage > 0}"
+                        th:href="@{/myPage/list(page=${inquiryCurrentPage - 1}, size=${inquiryPage2.size})}">이전</button>
+                <span th:text="'페이지 ' + (${inquiryCurrentPage + 1}) + ' / ' + ${inquiryTotalPages}"></span>
+                <button th:if="${inquiryCurrentPage + 1 < inquiryTotalPages}"
+                        th:href="@{/myPage/list(page=${inquiryCurrentPage + 1}, size=${inquiryPage2.size})}">다음</button>
+            </div>
+        </div>
+
+        <div>
+            <h3>나의 후원내역</h3>
+            <ul th:if="${#lists.isEmpty(donationPage2.content)}">
+                <p>후원한 내역이 없습니다.</p>
+            </ul>
+            <ul th:unless="${#lists.isEmpty(donationPage2.content)}">
+                <li th:each="donation : ${donationPage2.content}">
+                    <p>후원한 보호센터: <span th:text="${donation.shelterName}"></span></p>
+                    <p>후원 금액: <span th:text="${donation.amount}"></span> 원</p>
+                </li>
+            </ul>
+            <div class="pagination">
+                <button th:if="${donationCurrentPage > 0}"
+                        th:href="@{/myPage/list(page=${donationCurrentPage - 1}, size=${donationPage2.size})}">이전</button>
+                <span th:text="'페이지 ' + (${donationCurrentPage + 1}) + ' / ' + ${donationTotalPages}"></span>
+                <button th:if="${donationCurrentPage + 1 < donationTotalPages}"
+                        th:href="@{/myPage/list(page=${donationCurrentPage + 1}, size=${donationPage2.size})}">다음</button>
+            </div>
+        </div>
+
+    </div>
+
+
+
+    </div>
+
+</main>
+
+<div th:replace="import/footer :: footer"></div> <!-- 푸터 임포트 -->
+
+</body>
+</html>
