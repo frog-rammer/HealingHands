@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>새 가족 맞이하기</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #FAF3E3; /* 배경을 웜톤으로 변경 */
+        }
+        /* 검색 필터 컨테이너 */
+        .search-filter-container {
+            display: flex;
+            align-items: center;
+            gap: 15px; /* 요소 간의 간격 추가 */
+            padding: 20px; /* 전체 패딩 추가 */
+            background-color: #f0f0f0;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .species-checkbox-label, #breed-select, #search-btn {
+            margin: 0 10px; /* 좌우 마진 추가 */
+        }
+
+        /* 검색 입력란 */
+        #search-input {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            width: 250px;
+            transition: border-color 0.3s;
+        }
+
+        #search-input:focus {
+            outline: none;
+            border-color: #ff862f;
+        }
+
+        /* 체크박스 스타일 */
+        .species-checkbox-label {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            color: #333;
+        }
+
+        /* 품종 선택 셀렉트 */
+        #breed-select {
+            padding: 10px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            transition: border-color 0.3s;
+        }
+
+        #breed-select:focus {
+            outline: none;
+            border-color: #ff862f;
+        }
+
+        /* 검색 버튼 스타일 */
+        #search-btn {
+            padding: 10px 20px;
+            font-size: 14px;
+            color: #fff;
+            background-color: #bfaa80;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        #search-btn:hover {
+            background-color: #ff862f;
+        }
+
+        /* 동물 이미지 그리드 */
+        .animal-grid-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        /* 반응형 레이아웃 */
+        @media (max-width: 768px) {
+            .animal-grid-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .animal-grid-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* 각 동물 카드 스타일 */
+        .animal-card-container {
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            padding: 10px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            background-color: #f9f9f9;
+        }
+
+        .animal-card-container img {
+            object-fit: cover;
+            width: 100%;
+            height: 300px;
+            border-radius: 5px;
+        }
+
+        /* 동물 정보 스타일 */
+        .animal-info h3 {
+            margin: 10px 0 5px;
+            font-size: 18px;
+            color: #333;
+        }
+
+        .animal-info p {
+            margin: 3px 0;
+            font-size: 14px;
+            color: #555;
+        }
+
+        /* 입양 동물 등록 버튼 스타일 */
+        #register-container {
+            text-align: center;
+            margin-left: 600px;
+        }
+
+        #register {
+            padding: 15px 30px;
+            font-size: 16px;
+            background-color: #bfaa80;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        #register:hover {
+            background-color: #ff862f;
+        }
+
+        /* 푸터 스타일 */
+        footer {
+            background-color: #f1f1f1;
+            padding: 10px;
+            text-align: center;
+        }
+
+        img {
+            height: 50px;
+        }
+
+        /* 페이지네이션 스타일 */
+        .pagination {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .pagination a {
+            margin: 0 5px;
+            padding: 8px 16px;
+            text-decoration: none;
+            color: #ff862f;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .pagination a:hover {
+            background-color: #bfaa80;
+            color: #fff;
+        }
+
+        /* Main 크기 조정 */
+        main {
+            width: 66.67%;
+            margin: 50px auto;
+        }
+    </style>
+</head>
+<body onload="updateBreeds()">
+<div th:replace="import/header :: header"></div> <!-- 헤더 임포트 -->
+<main>
+    <!-- 검색 필터 -->
+    <div class="search-filter-container">
+        <form th:action="@{/animals/list}" method="get">
+            <label class="species-checkbox-label"><input type="checkbox" name="species" value="dog" onclick="updateBreeds()"> 강아지</label>
+            <label class="species-checkbox-label"><input type="checkbox" name="species" value="cat" onclick="updateBreeds()"> 고양이</label>
+            <label class="species-checkbox-label"><input type="checkbox" name="species" value="other" onclick="updateBreeds()"> 기타</label>
+            <select id="breed-select" name="breed">
+                <option value="">품종 선택</option>
+            </select>
+            <button id="search-btn" type="submit">검색</button>
+        </form>
+        <!-- 입양 동물 등록하기 버튼 -->
+        <div id="register-container" th:if="${user != null and user.userType == 'SHELTER'}">
+            <a th:href="@{/animals/register1}">
+                <button id="register">입양 동물 등록하기</button>
+            </a>
+        </div>
+    </div>
+
+    <!-- 동물 목록 그리드 -->
+    <div class="animal-grid-container">
+        <div th:if="${#lists.isEmpty(animalsPage.content)}">
+            <p>등록된 동물이 없습니다.</p>
+        </div>
+        <div th:each="animal : ${animalsPage.content}" class="animal-card-container">
+            <a th:href="@{/animals/detail/{id}(id=${animal.animalId})}">
+                <img th:src="${animal.imageUrl}"  alt="동물 이미지">
+            </a>
+            <div class="animal-info">
+                <h3 th:text="${animal.name}">동물 이름</h3>
+                <p th:text="'나이: ' + ${animal.age} + '세'">나이 정보</p>
+                <p th:text="'품종: ' + ${animal.breed}">품종 정보</p>
+                <p th:text="'성별: ' + (${animal.gender} == 'MALE' ? '수컷' : '암컷')">성별 정보</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 페이지네이션 네비게이션 -->
+    <div class="pagination">
+        <a th:if="${currentPage > 0}"
+           th:href="@{/animals/list(page=${currentPage - 1}, size=${animalsPage.size})}">이전</a>
+
+        <span th:text="'페이지 ' + (${currentPage + 1}) + ' / ' + ${totalPages}"></span>
+
+        <a th:if="${currentPage + 1 < totalPages}"
+           th:href="@{/animals/list(page=${currentPage + 1}, size=${animalsPage.size})}">다음</a>
+    </div>
+</main>
+
+<div th:replace="import/footer :: footer"></div> <!-- 푸터 임포트 -->
+
+<script>
+
+    const dogBreeds = [
+        { value: '믹스견', text: '믹스견' },
+        { value: '푸들', text: '푸들' },
+        { value: '말티즈', text: '말티즈' },
+        { value: '포메라니안', text: '포메라니안' },
+        { value: '시츄', text: '시츄' },
+        { value: '닥스훈트', text: '닥스훈트' },
+        { value: '리트리버', text: '리트리버' },
+        { value: '롯트와일러', text: '롯트와일러' },
+        { value: '비숑', text: '비숑' },
+        { value: '시바견', text: '시바견' },
+        { value: '프렌치불독', text: '프렌치불독' },
+        { value: '진도', text: '진도' }
+    ];
+
+    const catBreeds = [
+        { value: '페르시안', text: '페르시안' },
+        { value: '샴', text: '샴' },
+        { value: '코리안숏헤어', text: '코리안숏헤어' },
+        { value: '배회고양이', text: '배회고양이' }
+    ];
+
+    const otherBreeds = [
+        { value: '햄스터', text: '햄스터' },
+        { value: '앵무새', text: '앵무새' }
+    ];
+
+    function updateBreeds() {
+        const breedSelect = document.getElementById('breed-select');
+        const dogCheckbox = document.querySelector('input[value="dog"]').checked;
+        const catCheckbox = document.querySelector('input[value="cat"]').checked;
+        const otherCheckbox = document.querySelector('input[value="other"]').checked;
+
+        breedSelect.innerHTML = '<option value="">품종 선택</option>';
+
+        if (dogCheckbox) {
+            dogBreeds.forEach(breed => {
+                const option = document.createElement('option');
+                option.value = breed.value;
+                option.textContent = breed.text;
+                breedSelect.appendChild(option);
+            });
+        }
+
+        if (catCheckbox) {
+            catBreeds.forEach(breed => {
+                const option = document.createElement('option');
+                option.value = breed.value;
+                option.textContent = breed.text;
+                breedSelect.appendChild(option);
+            });
+        }
+
+        if (otherCheckbox) {
+            otherBreeds.forEach(breed => {
+                const option = document.createElement('option');
+                option.value = breed.value;
+                option.textContent = breed.text;
+                breedSelect.appendChild(option);
+            });
+        }
+    }
+</script>
+</body>
+</html>

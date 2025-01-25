@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>유저 회원가입</title>
+    <style>
+        label {
+            display: block;
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+<form th:action="@{/userMemberController/join}" method="post">
+    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+    <h1>회원가입</h1>
+
+    <label>아이디
+        <input class="addUser" type="text" name="userMemId" required placeholder="아이디" id="userid"/>
+    </label>
+
+    <label>비밀번호
+        <input class="addUser" type="password" name="user_mem_pw" required placeholder="비밀번호" id="password"/>
+        <input class="addUser" type="password" name="user_mem_pw2" required placeholder="비밀번호 확인" id="password-retype"/>
+    </label>
+
+    <label>이메일
+        <input class="addUser" type="text" name="user_mem_mail" required placeholder="이메일 아이디"/>@
+        <input type="text" name="user_mem_mailDirect" placeholder="직접입력"/>
+        <select name="user_mem_mailSelect" required>
+            <option value="none" selected>선택 없음</option>
+            <option value="naver.com">naver.com</option>
+            <option value="gmail.com">gmail.com</option>
+            <option value="daum.net">daum.net</option>
+            <option value="yahoo.com">yahoo.com</option>
+        </select>
+    </label>
+
+    <label>이름
+        <input class="addUser" type="text" name="user_mem_name" required placeholder="이름"/>
+    </label>
+
+    <label>주소
+        <input class="addUser" type="text"  name="user_mem_address" required placeholder="주소"/>
+    </label>
+
+    <label>전화번호
+        <input class="addUser" type="text" name="user_mem_phone" required placeholder="전화번호"/>
+    </label>
+
+    <label>나이
+        <input class="addUser" type="text" name="user_mem_age" required placeholder="나이"/>
+    </label>
+
+    <label>성별
+        <select name="user_mem_gender" required>
+            <option value="m">남자</option>
+            <option value="w">여자</option>
+        </select>
+    </label>
+
+    <input type="submit" value="가입 완료">
+</form>
+
+<script>
+    document.querySelector('form').addEventListener('submit', function(event) {
+        const userMemId = document.querySelector('input[name="userMemId"]').value;
+        const userMemPw = document.querySelector('input[name="user_mem_pw"]').value;
+        const userMemPw2 = document.querySelector('input[name="user_mem_pw2"]').value;
+        const userMemAddress = document.querySelector('input[name="user_mem_address"]').value;
+        const userMemName = document.querySelector('input[name="user_mem_name"]').value;
+        const emailId = document.querySelector('input[name="user_mem_mail"]').value.trim(); // 아이디 부분
+        const emailDirect = document.querySelector('input[name="user_mem_mailDirect"]').value.trim(); // 직접 입력 부분
+        const emailSelect = document.querySelector('select[name="user_mem_mailSelect"]').value; // 선택된 도메인
+
+        // 이메일 조합
+        let email = '';
+
+
+        console.log('emailDirect:', emailDirect);
+        console.log('emailSelect:', emailSelect);
+        console.log('emailId:', emailId);
+
+        if (emailDirect && emailSelect !== 'none') {  // emailDirect가 비어있지 않고 emailSelect가 'none'이 아닌 경우
+            email = `${emailId}@${emailDirect}`;
+        } else if (emailSelect !== 'none') {  // emailSelect가 'none'이 아닌 경우
+            email = `${emailId}@${emailSelect}`;
+        } else if (emailDirect !== "") {  // emailDirect가 비어있지 않으면 직접 입력된 이메일로 처리
+            email = `${emailId}@${emailDirect}`;
+        } else {
+            alert('도메인을 선택하거나 직접 입력하세요.');
+            event.preventDefault(); // 폼 제출 방지
+            return;
+        }
+
+        console.log('결과 이메일:', email); // 최종 이메일 출력
+
+
+
+        console.log('결과 이메일:', email); // 최종 이메일 출력
+
+
+        // 이메일 형식 확인
+        if (!validateEmail(email)) {
+            alert('잘못된 이메일 형식입니다.');
+            event.preventDefault(); // 폼 제출 방지
+            return;
+        }
+
+        // 필수 입력 확인
+        if (!userMemId || !userMemPw || !userMemAddress || !userMemName || !emailId) {
+            alert('아이디, 비밀번호, 주소, 이름, 이메일은 필수 입력 항목입니다.');
+            event.preventDefault(); // 폼 제출 방지
+            return;
+        } else if (userMemPw !== userMemPw2) {
+            alert('비밀번호와 비밀번호 확인이 일치하지 않습니다.');
+            event.preventDefault(); // 폼 제출 방지
+            return;
+        }
+
+        // 이메일을 숨겨진 필드에 설정
+        const hiddenEmailField = document.createElement('input');
+        hiddenEmailField.type = 'hidden';
+        hiddenEmailField.name = 'user_mem_mailFull';
+        hiddenEmailField.value = email;
+        document.querySelector('form').appendChild(hiddenEmailField);
+    });
+
+    function validateEmail(email) {
+        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // 기본 이메일 형식 정규 표현식
+        return regex.test(email);
+    }
+</script>
+
+</body>
+</html>

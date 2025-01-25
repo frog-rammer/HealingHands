@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>보호소 등록</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://unpkg.com/@daum/postcode@2.0.1/build/postcode.v2.js"></script>
+    <script>
+        function findPostcode() {
+            window.open('/address', '주소 검색', 'width=600,height=400');
+        }
+
+        function updateCombinedAddress() {
+            const address = document.getElementById('address').value;
+            const detailAddress = document.getElementById('detail_address').value;
+            const combinedAddress = address + ' ' + detailAddress;
+            document.getElementById('combined_address').value = combinedAddress.trim();
+        }
+
+        function checkShelterName() {
+            const shelterName = $("input[name='shelterName']").val();
+
+            if (!shelterName) {
+                alert("보호소 이름을 입력하세요.");
+                return;
+            }
+
+            $.ajax({
+                url: '/shelters/checkshelterName',
+                method: 'GET',
+                data: { shelterName: shelterName },
+                success: function(response) {
+                    if (response) {
+                        alert("사용 가능한 보호소 이름 입니다.");
+                    } else {
+                        alert("이미 사용 중인 보호소 이름 입니다.");
+                    }
+                },
+                error: function() {
+                    alert("오류가 발생했습니다. 다시 시도해주세요.");
+                }
+            });
+        }
+    </script>
+    <style>
+        body {
+            background-color: #FAF3E3; /* 웜톤 배경 */
+            font-family: Arial, sans-serif;
+            color: #5D4037; /* 텍스트 색상 */
+        }
+
+        .container {
+            max-width: 65%;
+            margin: 40px auto;
+            background-color: #FFF8E1; /* 콘텐츠 배경색 */
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: #db9a1a; /* 타이틀 색상 */
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            color: #6D4C41; /* 라벨 텍스트 색상 */
+        }
+
+        .form-control, .form-control-file, .input-group-text {
+            border: 1px solid #bfaa80; /* 필드 테두리 색상 */
+            border-radius: 5px;
+            background-color: #FFF7E1;
+            padding: 10px;
+        }
+
+        .address-group {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .address-group input {
+            flex: 1;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .address-group button {
+            margin-left: 10px;
+            background-color: #bfaa80;
+            color: #fff;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .address-group button:hover {
+            background-color: #edab1a;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .btn-primary {
+            background-color: #bfaa80;
+            border-color: #bfaa80;
+            color: #ffffff;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+            width: 150px;
+            margin: 0 10px;
+        }
+
+        .btn-primary:hover {
+            background-color: #edab1a;
+            border-color: #edab1a;
+        }
+
+        .btn-secondary {
+            background-color: #db9a1a;
+            border-color: #db9a1a;
+            color: #ffffff;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+            width: 150px;
+            margin: 0 10px;
+        }
+
+        .btn-secondary:hover {
+            background-color: #bfaa80;
+            border-color: #bfaa80;
+        }
+    </style>
+
+</head>
+<body>
+<div th:replace="import/header :: header"></div> <!-- 헤더 임포트 -->
+<div class="container mt-5">
+    <h2>보호소 신청</h2>
+    <form action="/shelters/register" method="post" enctype="multipart/form-data" th:object="${shelterDTO}">
+        <div class="form-group">
+            <label for="shelterName">보호소 이름</label>
+            <input type="text" class="form-control" id="shelterName" name="shelterName" th:field="*{shelterName}" required>
+            <button type="button" onclick="checkShelterName()">보호소 이름 중복 조회</button>
+        </div>
+        <div class="form-group">
+            <label for="address">주소</label>
+            <div class="address-group">
+                <input type="text" class="form-control" id="address" name="address" placeholder="주소 검색을 통해 주소를 입력하세요" required readonly>
+                <button type="button" class="btn btn-secondary" onclick="findPostcode()">주소 검색</button>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="detail_address">상세주소</label>
+            <input type="text" class="form-control" id="detail_address" placeholder="상세주소를 입력하세요" oninput="updateCombinedAddress()">
+        </div>
+        <input type="hidden" id="combined_address" name="shelterAddress" th:field="*{address}">
+
+        <div class="form-group">
+            <label for="contactInfo">연락처</label>
+            <input type="text" class="form-control" id="contactInfo" name="contactInfo" th:field="*{contactInfo}" required>
+        </div>
+        <div class="form-group">
+            <label for="operatingHours">운영시간</label>
+            <input type="text" class="form-control" id="operatingHours" name="operatingHours" th:field="*{operatingHours}" placeholder="예: 09:00 - 18:00" required>
+        </div>
+        <div class="form-group">
+            <label for="animalCount">보호 동물 수</label>
+            <input type="number" class="form-control" id="animalCount" name="animalCount" th:field="*{animalCount}" required>
+        </div>
+        <div class="form-group">
+            <label for="shelterPhoto">보호소 사진</label>
+            <input type="file" class="form-control-file" id="shelterPhoto" name="shelterPhoto" accept="image/*" required>
+        </div>
+        <div class="form-group">
+            <label for="services">보호소 소개하기</label>
+            <textarea class="form-control" id="services" name="services" th:field="*{services}" rows="3" placeholder="보호소에 대해 소개해주세요" required></textarea>
+        </div>
+        <div class="button-group">
+            <button type="submit" class="btn btn-primary">신청하기</button>
+            <button type="reset" class="btn btn-secondary">취소</button>
+        </div>
+    </form>
+</div>
+<div th:replace="import/footer :: footer"></div> <!-- 푸터 임포트 -->
+</body>
+</html>

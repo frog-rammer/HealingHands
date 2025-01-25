@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>봉사 게시판</title>
+  <style>
+    /* 전체 페이지 스타일 */
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #FAF3E3; /* 배경색을 웜톤으로 변경 */
+    }
+
+    /* 메인 콘텐츠 스타일 */
+    main {
+      padding: 20px;
+      max-width: 65%;
+      margin: 20px auto;
+      background-color: #FFF7E1; /* 웜톤 배경색 */
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+    }
+
+    /* 봉사 활동 안내사항 스타일 */
+    .notice {
+      border-left: 4px solid #A67B5B; /* 웜톤 계열 색상 */
+      padding: 15px;
+      background-color: #FFF4E0;
+      margin-bottom: 20px;
+      line-height: 1.6;
+      border-radius: 5px;
+    }
+
+    .notice h2 {
+      margin: 0 0 10px;
+      font-size: 1.2em;
+      color: #A67B5B; /* 제목 색상 변경 */
+    }
+
+    /* 봉사 일정 등록 버튼 스타일 */
+    .register {
+      padding: 10px 20px;
+      background-color: #D5A478; /* 웜톤 색상 */
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      text-align: center;
+      display: inline-block;
+      border-radius: 4px;
+      text-decoration: none;
+      transition: background-color 0.3s;
+      margin-bottom: 20px;
+    }
+
+    .register:hover {
+      background-color: #C09065;
+    }
+
+    /* 검색 섹션 스타일 */
+    .search-section {
+      display: flex;
+      justify-content: center; /* 가운데 정렬 */
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .search-section input[type="text"],
+    .search-section select {
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+      width: 300px; /* 입력 필드 너비 조정 */
+      font-size: 16px;
+    }
+
+    .search-section button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #D5A478;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: background-color 0.3s;
+    }
+
+    .search-section button:hover {
+      background-color: #C09065;
+    }
+
+    /* 봉사 게시판 스타일 */
+    .volunteer-board {
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .volunteer-board li {
+      padding: 15px;
+      border-bottom: 1px solid #ddd;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .volunteer-board li a {
+      font-size: 1.1em;
+      font-weight: bold;
+      color: #A67B5B; /* 링크 색상 변경 */
+      text-decoration: none;
+    }
+
+    .volunteer-board li a:hover {
+      text-decoration: underline;
+    }
+
+    .volunteer-board li .meta-info {
+      font-size: 0.9em;
+      color: #666;
+    }
+
+    /* 페이지네이션 네비게이션 */
+    .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .pagination button {
+      padding: 8px 16px;
+      background-color: #D5A478; /* 버튼 색상 변경 */
+      border: none;
+      cursor: pointer;
+      border-radius: 4px;
+      color: #fff;
+      transition: background-color 0.3s;
+    }
+
+    .pagination button:hover {
+      background-color: #C09065;
+    }
+
+    .pagination button:disabled {
+      background-color: #F3E2D1;
+      cursor: default;
+      color: #B8B8B8;
+    }
+
+    .pagination span {
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+<div th:replace="import/header :: header"></div> <!-- 헤더 임포트 -->
+<main>
+  <!-- 봉사 활동 안내사항 -->
+  <div class="notice">
+    <h2>봉사 활동 시 안내사항</h2>
+    <ul>
+      <li>편안하고 활동하기 좋은 복장을 착용해 주세요.</li>
+      <li>개인 위생을 위해 마스크와 개인 물병을 지참해 주세요.</li>
+      <li>알러지나 질병이 있는 경우 사전에 알려주시기 바랍니다.</li>
+      <li>봉사 활동 중에는 음주나 흡연을 삼가해 주세요.</li>
+      <li>동물들에게 스트레스를 주는 행동은 자제해 주세요.</li>
+      <li>사진 촬영 시 사전 허락을 받아주시기 바랍니다.</li>
+      <li>귀중품이나 위험한 물건은 지참하지 말아 주세요.</li>
+    </ul>
+  </div>
+
+  <!-- 봉사 일정 등록 버튼 -->
+  <span th:if="${user != null and user.userType == 'SHELTER'}">
+    <a th:href="@{/volunteers/service/register}" class="register">봉사일정 등록하기</a>
+  </span>
+
+  <!-- 검색 섹션 -->
+  <div class="search-section">
+    <form th:action="@{/volunteers/list}" method="get">
+    <input type="text" name="keyword" placeholder="제목명 및 보호센터 검색" th:value="${keyword}">
+    <button type="submit">검색</button>
+    </form>
+  </div>
+
+  <!-- 봉사 게시판 -->
+  <ul class="volunteer-board">
+    <div th:if="${#lists.isEmpty(volunteerPage.content)}">
+      <p>등록된 문의가 없습니다.</p>
+    </div>
+    <div th:unless="${#lists.isEmpty(volunteerPage.content)}">
+      <li th:each="volunteer : ${volunteerPage.content}">
+        <a th:href="@{/volunteers/detail/{id}(id=${volunteer.volunteerId})}" th:text="${volunteer.title}"></a>
+        <div class="meta-info">
+
+          보호 센터 : <span th:text="${shelterName}"></span> |
+          활동 내용: <span th:text="${volunteer.volunteerType}"></span> |
+          모집 인원: <span th:text="${volunteer.peopleLimit}"></span>
+        </div>
+      </li>
+    </div>
+  </ul>
+
+  <!-- 페이지네이션 네비게이션 -->
+  <div class="pagination">
+    <button th:if="${currentPage > 0}"
+            th:href="@{/animals/list(page=${currentPage - 1}, size=${volunteerPage.size})}">이전</button>
+
+    <span th:text="'페이지 ' + (${currentPage + 1}) + ' / ' + ${totalPages}"></span>
+
+    <button th:if="${currentPage + 1 < totalPages}"
+            th:href="@{/volunteers/list(page=${currentPage + 1}, size=${volunteerPage.size})}">다음</button>
+  </div>
+</main>
+<div th:replace="import/footer :: footer"></div> <!-- 푸터 임포트 -->
+</body>
+</html>

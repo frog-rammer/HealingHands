@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<div th:fragment="footer">
+    <html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+        <style>
+            /* 푸터 스타일 */
+            footer {
+                margin-top: 50px;
+                background-color: #FAF3E3;
+                padding: 5px;
+                text-align: center;
+                color: rgba(141, 121, 121, 0.97);
+            }
+
+            footer p {
+                font-weight: bold;
+            }
+
+            footer nav ul li {
+                list-style-type: none;
+            }
+
+            footer nav ul li a {
+                text-decoration-line: none;
+                color: rgba(141, 121, 121, 0.97);
+            }
+
+
+        </style>
+    </head>
+    <body>
+
+    <footer>
+        <p>© 2024 날데려갈고양 널데려갈개 All rights reserved.</p>
+        <nav>
+            <ul>
+                <li><a href="privacy.html">개인정보 처리방침</a></li>
+                <li><a href="terms.html">이용 약관</a></li>
+                <li><a href="/qna">문의하기</a></li>
+            </ul>
+        </nav>
+    </footer>
+
+    </body>
+    </html>
+</div>

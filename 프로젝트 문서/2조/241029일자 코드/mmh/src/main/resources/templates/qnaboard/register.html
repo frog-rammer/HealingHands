@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<th:block th:replace="~{/layout/basic :: setContent(~{this::content})}">
+    <th:block th:fragment="content">
+        <h1 class="mt-4">QNA 게시판 글 작성</h1>
+        <form th:action="@{/qnaboard/register}" th:method="post">
+            <div class="form-group">
+                <label>카테고리</label>
+                <select name="qna_board_category">
+                    <option>-----</option>
+                    <option value="주문">주문</option>
+                    <option value="배송">배송</option>
+                    <option value="상품정보">상품정보</option>
+                    <option value="결제">결제</option>
+                    <option value="회원">회원</option>
+                    <option value="기타">기타</option>
+                </select>
+            </div>
+            <div class="form-group">
+
+                <label>제목</label>
+                <input class="form-control" name="qna_board_title" placeholder="Enter Title" type="text">
+            </div>
+            <div class="form-group">
+                <label>내용</label>
+                <textarea class="form-control" name="qna_board_content" rows="5"></textarea>
+            </div>
+            <div class="form-group">
+                <label>작성자</label>
+                <input class="form-control" name="userMemNo" placeholder="Enter Writer" type="text">
+            </div>
+            <button class="btn btn-primary" type="submit">Submit</button>
+        </form>
+    </th:block>
+</th:block>

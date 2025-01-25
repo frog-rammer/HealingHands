@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<!--<th:block th:replace=~"{/layout/basic :: setContent(~{this::content})}"></th:block>-->
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<th:block th:fragment="content">
+  <h1>즐겨찾기 목록</h1>
+
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th scope="col">즐겨찾는 업체</th>
+            <th scope="col">즐겨찾는 상품</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr th:each="dto : ${result.dtoList}">
+            <th scope="row">[[${dto.manuInfoNo}]] <button onclick="removeBookmark('${favorite.productNo}')" class="btn btn-danger">제거</button></th>
+                <a th:href="@{/templates/favorite/register}"></a>
+            <th scope="row">[[${dto.productNo}]]  <button onclick="removeBookmark('${favorite.productNo}')" class="btn btn-danger">제거</button></th>
+                <a th:href="@{/templates/favorite/register}"></a>
+        </tr>
+        </tbody>
+
+    </table>
+
+    <ul class="pagination h-100 justify-content-center align-items-center">
+
+        <li class="page-item " th:if="${result.prev}">
+            <a class="page-link" href="#" tabindex="-1">Previous</a>
+        </li>
+
+        <li th:class=" 'page-item ' + ${result.page == page?'active':''}" th:each="page: ${result.pageList}">
+            <a class="page-link" href="#">
+                [[${page}]]
+            </a>
+        </li>
+
+        <li class="page-item " th:if="${result.next}">
+            <a class="page-link" href="#">Next</a>
+        </li>
+    </ul>
+
+    <script th:inline="javascript">
+        var msg = [[${msg}]];
+        console.log(msg);
+
+        if (msg) {
+            $(".modal").modal();
+        }
+    <script th:inline="javascript">
+
+        var masg = [[${msg}]];
+
+        console.log(msg);
+    </script>
+
+</th:block>
+</body>
+</html>
+

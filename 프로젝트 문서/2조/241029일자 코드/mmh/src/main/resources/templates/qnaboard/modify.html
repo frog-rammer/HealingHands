@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<th:block th:replace="~{/layout/basic :: setContent(~{this::content})}">
+    <th:block th:fragment="content">
+        <h1 class="mt-4">QNA 게시판 글 작성</h1>
+        <form th:action="@{/qnaboard/modify}" th:method="post">
+            <input type="hidden" name="page" th:value="${requestDTO.page}">
+            <input type="hidden" name="qnaBoardNo" th:value="${dto.qnaBoardNo}">
+            <div class="form-group">
+                <label>카테고리</label>
+                <select name="qna_board_category">
+                    <option th:selected="${dto.qna_board_category==null}">-----</option>
+                    <option th:selected="${dto.qna_board_category=='주문'}" value="주문">주문</option>
+                    <option th:selected="${dto.qna_board_category=='배송'}" value="배송">배송</option>
+                    <option th:selected="${dto.qna_board_category=='상품정보'}" value="상품정보">상품정보</option>
+                    <option th:selected="${dto.qna_board_category=='결제'}" value="결제">결제</option>
+                    <option th:selected="${dto.qna_board_category=='회원'}" value="회원">회원</option>
+                    <option th:selected="${dto.qna_board_category=='기타'}" value="기타">기타</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>제목</label>
+                <input class="form-control" name="qna_board_title" th:value="${dto.qna_board_title}" type="text">
+            </div>
+            <div class="form-group">
+                <label>내용</label>
+                <textarea class="form-control" name="qna_board_content" rows="5">[[${dto.qna_board_content}]]</textarea>
+            </div>
+            <div class="form-group">
+                <label>작성자</label>
+                <input class="form-control" readonly th:value="${dto.userMemNo}" type="text">
+            </div>
+        </form>
+        <button class="btn btn-primary modifyBtn" type="button">Modify</button>
+        <button class="btn btn-info listBtn" type="button">List</button>
+        <button class="btn btn-danger removeBtn" type="button">Remove</button>
+
+        <script th:inline="javascript">
+            var actionForm = $("form"); //form 태그 객체
+            $(".removeBtn").click(function () {
+                actionForm
+                    .attr("action", "/qnaboard/remove")
+                    .attr("method", "post");
+
+                actionForm.submit();
+            });
+
+            $(".modifyBtn").click(function () {
+                if (!confirm("수정하시겠습니까?")) {
+                    return;
+                }
+
+                actionForm
+                    .attr("action", "/qnaboard/modify")
+                    .attr("method", "post")
+                    .submit();
+            });
+
+            $(".listBtn").click(function () {
+                var pageInfo = $("input[name='page']");
+
+                actionForm.empty(); //form 태그의 모든 내용을 지우고
+                actionForm.append(pageInfo); //목록 페이지 이동에 필요한 내용을 다시 추가
+                actionForm
+                    .attr("action", "/qnaboard/list")
+                    .attr("method", "get");
+
+                // console.log(actionForm.html());//먼저 확인 후에 주석처리
+                actionForm.submit(); //확인 후 주석 해제
+            });
+        </script>
+    </th:block>
+</th:block>
+>

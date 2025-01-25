@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>업체 회원가입</title>
+    <style>
+        label {
+            display: block;
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+<form method="post" th:action="@{/manufacturerMemberController/join}">
+    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+    <h1>회원가입</h1>
+    <label>아이디
+        <input class="addUser" type="text" name="manuMemId" required placeholder="아이디" id="userid"/>
+    </label>
+    <label>비밀번호
+        <input class="addUser" type="password" name="manuMemPw" required placeholder="비밀번호" id="password"/>
+        <input class="addUser" type="password" name="manuMemPw2" required placeholder="비밀번호 확인" id="password-retype"/>
+    </label>
+    <label>이메일
+        <input class="addUser" type="text" name="manuMemMail" required placeholder="이메일 아이디"/>@
+        <input type="text" name="manuMemMailDirect" placeholder="직접입력"/>
+        <select name="manuMemMailSelect" required>
+            <option value="none" selected>선택 없음</option>
+            <option value="naver.com">naver.com</option>
+            <option value="gmail.com">gmail.com</option>
+            <option value="daum.net">daum.net</option>
+            <option value="yahoo.com">yahoo.com</option>
+        </select>
+    </label>
+    <label>대표자 이름
+        <input class="addUser" type="text" name="manuMemName" required placeholder="이름"/>
+    </label>
+    <label>사업자 번호
+        <input class="addUser" type="text" name="manuMemBNumber" required placeholder="사업자 번호"/>
+    </label>
+    <input type="submit" value="가입 완료">
+</form>
+<script>
+    // 변수 설정
+    let elInputUserName = document.querySelector('#userid');
+    let elInputPassword = document.querySelector('#password');
+    let elInputPasswordRetype = document.querySelector('#password-retype');
+
+    // 비밀번호와 이메일 유효성 검사
+    function strongPassword(str) {
+        return /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{6,}$/.test(str);
+    }
+
+    document.querySelector('form').addEventListener('submit', function(event) {
+        const userMemId = document.querySelector('input[name="manuMemId"]').value;
+        const userMemPw = document.querySelector('input[name="manuMemPw"]').value;
+        const userMemPw2 = document.querySelector('input[name="manuMemPw2"]').value;
+        const userMemName = document.querySelector('input[name="manuMemName"]').value;
+        const emailId = document.querySelector('input[name="manuMemMail"]').value.trim();
+        const emailDirect = document.querySelector('input[name="manuMemMailDirect"]').value.trim();
+        const emailSelect = document.querySelector('select[name="manuMemMailSelect"]').value;
+
+        let email = emailId;
+        if (emailSelect !== 'none') {
+            email += `@${emailSelect}`;
+        }
+        if (emailDirect) {
+            email += `@${emailDirect}`;
+        }
+
+        // 필수 입력 확인
+        if (!userMemId || !userMemPw || !userMemName || !emailId) {
+            alert('아이디, 비밀번호, 이름, 이메일은 필수 입력 항목입니다.');
+            event.preventDefault();
+            return;
+        } else if (userMemPw !== userMemPw2) {
+            alert('비밀번호와 비밀번호 확인이 일치하지 않습니다.');
+            event.preventDefault();
+            return;
+        } else if (!strongPassword(userMemPw)) {
+            alert('비밀번호는 최소 6자 이상이며, 영문, 숫자, 특수문자를 포함해야 합니다.');
+            event.preventDefault();
+            return;
+        }
+
+        // 이메일 형식 확인
+        if (!validateEmail(email)) {
+            alert('잘못된 이메일 형식입니다.');
+            event.preventDefault();
+            return;
+        }
+
+        // 숨겨진 필드에 이메일 추가
+        const hiddenEmailField = document.createElement('input');
+        hiddenEmailField.type = 'hidden';
+        hiddenEmailField.name = 'manuMemMailFull';
+        hiddenEmailField.value = email;
+        document.querySelector('form').appendChild(hiddenEmailField);
+    });
+
+    function validateEmail(email) {
+        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return regex.test(email);
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<th:block th:replace="~{/layout/basic :: setContent(~{this::content})}">
+    <th:block th:fragment="content">
+        <h1 class="mt-4">QNA 게시판
+            <span>
+                <a th:href="@{/qnaboard/register}">
+                    <button class="btn btn-outline-primary" type="button">REGISTER</button>
+                </a>
+            </span>
+        </h1>
+
+        <!--    <form action="/qnaboard/list" id="searchForm" method="get">-->
+        <!--        <div class="input-group">-->
+        <!--            <input name="page" type="hidden" value="1">-->
+        <!--            <div class="input-group-prepend">-->
+        <!--                <select class="custom-select" name="type">-->
+        <!--                    <option th:selected="${pageRequestDTO.type== null}">-&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;</option>-->
+        <!--                    <option th:selected="${pageRequestDTO.type=='t'}" value="t">제목</option>-->
+        <!--                    <option th:selected="${pageRequestDTO.type=='c'}" value="c">내용</option>-->
+        <!--                    <option th:selected="${pageRequestDTO.type=='w'}" value="w">작성자</option>-->
+        <!--                    <option th:selected="${pageRequestDTO.type=='tc'}" value="tc">제목 + 내용</option>-->
+        <!--                    <option th:selected="${pageRequestDTO.type=='tcw'}" value="tcw">제목 + 내용 + 작성자</option>-->
+        <!--                </select>-->
+        <!--            </div>-->
+        <!--            <input class="form-control" name="keyword" th:value="${pageRequestDTO.keyword}">-->
+        <!--            <div class="input-group-append" id="button-addon4">-->
+        <!--                <button class="btn btn-outline-secondary btn-search" type="button">Search</button>-->
+        <!--                <button class="btn btn-outline-secondary btn-clear" type="button">Clear</button>-->
+        <!--            </div>-->
+        <!--        </div>-->
+        <!--    </form>-->
+
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">답변</th>
+                <th scope="col">카테고리</th>
+                <th scope="col">제목</th>
+                <th scope="col">작성자</th>
+                <th scope="col">등록일</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="dto : ${result.dtoList}">
+                <th scope="row">
+                    <a th:href="@{/qnaboard/read(qnaBoardNo=${dto.qnaBoardNo})}">
+                        [[${dto.qnaBoardNo}]]
+                    </a>
+                </th>
+                <td>
+                    <th:block th:if="${dto.qna_board_answer == null}">×</th:block>
+                    <th:block th:if="${dto.qna_board_answer != null}">○</th:block>
+                </td>
+                <td>[[${dto.qna_board_category}]]</td>
+                <td>[[${dto.qna_board_title}]]</td>
+                <td>[[${dto.userMemNo}]]</td>
+                <td>[[${#temporals.format(dto.regDate, 'yyyy/MM/dd')}]]</td>
+            </tr>
+            </tbody>
+        </table>
+
+        <ul class="pagination h-100 justify-content-center align-items-center">
+            <li class="page-item " th:if="${result.prev}">
+                <a class="page-link" tabindex="-1"
+                   th:href="@{/qnaboard/list(page=${result.start -1} ) }">Previous</a>
+            </li>
+
+            <li th:class=" 'page-item ' + ${result.page == page?'active':''} " th:each="page: ${result.pageList}">
+                <a class="page-link"
+                   th:href="@{/qnaboard/list(page=${page} )}">
+                    [[${page}]]
+                </a>
+            </li>
+
+            <li class="page-item" th:if="${result.next}">
+                <a class="page-link"
+                   th:href="@{/qnaboard/list(page=${result.end +1})}">Next</a>
+            </li>
+        </ul>
+
+        <div class="modal" role="dialog" tabindex="-1">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Modal title</h5>
+                        <button aria-label="Close" class="close" data-dismiss="modal" type="button">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Modal body text goes here.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" data-dismiss="modal" type="button">Close</button>
+                        <button class="btn btn-primary" type="button">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script th:inline="javascript">
+            var msg = [[${msg}]];
+            console.log(msg);
+
+            if (msg) {
+                $(".modal").modal();
+            }
+
+            // var searchForm = $("#searchForm");
+            // $('.btn-search').click(function (e) {
+            //     searchForm.submit();
+            // });
+            //
+            // $('.btn-clear').click(function (e) {
+            //     searchForm.empty().submit();
+            // });
+        </script>
+
+    </th:block>
+</th:block>

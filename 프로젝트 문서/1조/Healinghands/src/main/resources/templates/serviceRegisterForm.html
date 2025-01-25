@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>봉사활동 일정 등록</title>
+    <style>
+        /* 공통 페이지 스타일 */
+        .page-body {
+            font-family: Arial, sans-serif;
+            background-color: #FAF3E3; /* 웜톤 배경 */
+            color: #5D4037;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+            width: 100%;
+        }
+
+        /* 헤더와 푸터 스타일 */
+        .header-container, .footer-container {
+            width: 100%;
+        }
+
+        /* 메인 컨테이너 스타일 */
+        .form-wrapper {
+            max-width: 600px;
+            width: 100%;
+            padding: 30px;
+            background-color: #FFF8E1; /* 폼 배경 */
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin: 20px 0;
+        }
+
+        /* 페이지 제목 스타일 */
+        .page-title {
+            text-align: center;
+            color: #db9a1a; /* 제목 색상 */
+            font-size: 24px;
+            margin-top: 20px;
+        }
+
+        /* 폼 요소 스타일 */
+        .form-label {
+            display: block;
+            font-weight: bold;
+            color: #6D4C41;
+            margin-bottom: 8px;
+        }
+
+        .form-input, .form-textarea, .form-select {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #bfaa80;
+            border-radius: 8px;
+            background-color: #FFF7E1;
+            font-size: 15px;
+            box-sizing: border-box;
+        }
+
+        /* 버튼 컨테이너와 버튼 스타일 */
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .btn-submit, .btn-cancel {
+            width: 48%;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            color: #ffffff;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-submit {
+            background-color: #bfaa80;
+        }
+
+        .btn-submit:hover {
+            background-color: #edab1a;
+        }
+
+        .btn-cancel {
+            background-color: #db9a1a;
+        }
+
+        .btn-cancel:hover {
+            background-color: #bfaa80;
+        }
+    </style>
+</head>
+<body class="page-body">
+
+<header class="header-container" th:replace="import/header :: header"></header>
+
+<main class="main-content">
+    <h1 class="page-title">봉사활동 일정 등록</h1>
+
+    <div class="form-wrapper">
+        <form class="volunteer-form" action="/volunteers/register" method="post" th:object="${volunteerDTO}">
+            <label for="title" class="form-label">봉사활동 제목</label>
+            <input type="text" id="title" class="form-input" th:field="*{title}" placeholder="봉사활동 제목을 입력하세요" required>
+
+            <label for="description" class="form-label">봉사활동 설명</label>
+            <textarea id="description" class="form-textarea" th:field="*{description}" rows="4" placeholder="봉사활동에 대한 설명을 입력하세요" required></textarea>
+
+            <label for="scheduledDate" class="form-label">봉사활동 날짜 (다중 선택 가능)</label>
+            <input type="text" id="scheduledDate" class="form-input" th:field="*{scheduledDate}" placeholder="봉사활동 날짜를 선택하세요" required>
+
+            <label for="peopleLimit" class="form-label">모집 인원</label>
+            <input type="number" id="peopleLimit" class="form-input" th:field="*{peopleLimit}" placeholder="모집 인원을 입력하세요" min="1" required>
+
+            <label for="volunteerType" class="form-label">봉사활동 종류</label>
+            <select id="volunteerType" class="form-select" th:field="*{volunteerType}" required>
+                <option value="견사 청소">견사 청소</option>
+                <option value="산책 봉사">산책 봉사</option>
+                <option value="목욕 봉사">목욕 봉사</option>
+                <option value="기타 (내용참조)">기타 (내용참조)</option>
+            </select>
+
+            <div class="button-container">
+                <input type="submit" value="일정등록" class="btn-submit">
+                <input type="reset" value="취소" class="btn-cancel" onclick="window.location.href='/volunteers/list'">
+            </div>
+        </form>
+    </div>
+</main>
+
+<footer class="footer-container" th:replace="import/footer :: footer"></footer>
+
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script>
+    flatpickr("#scheduledDate", {
+        mode: "multiple",
+        dateFormat: "Y-m-d",
+        minDate: "today"
+    });
+</script>
+</body>
+</html>

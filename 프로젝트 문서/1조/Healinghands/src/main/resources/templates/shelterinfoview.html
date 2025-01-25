@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>보호소 정보</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #FAF3E3; /* 웜톤 배경색 */
+      color: #5B4636; /* 텍스트 색상 */
+    }
+
+    .shelter-info {
+      max-width: 65%;
+      margin: 40px auto;
+      padding: 30px;
+      background-color: #FFF8E1; /* 콘텐츠 배경색 */
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .shelter-photo {
+      width: 100%;
+      max-height: 500px;
+      object-fit: cover;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    }
+
+    .shelter-details h2 {
+      color: #db9a1a; /* 타이틀 색상 */
+      margin-bottom: 15px;
+      text-align: center;
+    }
+
+    /* 테이블 스타일 */
+    .shelter-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    .shelter-table th, .shelter-table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .shelter-table th {
+      background-color: #db9a1a; /* 헤더 배경색 */
+      color: #fff;
+    }
+
+    .shelter-table td {
+      background-color: #FFF8E1;
+      color: #6D4C41;
+    }
+
+    .shelter-table td strong {
+      color: #bfaa80; /* 강조 텍스트 색상 */
+    }
+  </style>
+</head>
+<body>
+<div th:replace="import/header :: header"></div> <!-- 헤더 임포트 -->
+
+<main>
+  <div class="shelter-info">
+    <img th:src="${shelter.shelterPhotoPath}" th:alt="${shelter.shelterName}" class="shelter-photo">
+    <h2 th:text="${shelter.shelterName}"></h2>
+    <table class="shelter-table">
+      <tbody>
+      <tr>
+        <th>주소</th>
+        <td><span th:text="${shelter.address}"></span></td>
+      </tr>
+      <tr>
+        <th>연락처</th>
+        <td><span th:text="${shelter.contactInfo}"></span></td>
+      </tr>
+      <tr>
+        <th>운영 시간</th>
+        <td><span th:text="${shelter.operatingHours}"></span></td>
+      </tr>
+      <tr>
+        <th>보호 동물 수</th>
+        <td><span th:text="${shelter.animalCount}"></span> 마리</td>
+      </tr>
+      <tr>
+        <th>소개</th>
+        <td><span th:text="${shelter.services}"></span></td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</main>
+
+<div th:replace="import/footer :: footer"></div> <!-- 푸터 임포트 -->
+</body>
+</html>

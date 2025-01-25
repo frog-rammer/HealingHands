@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>사이트맵</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #FAF3E3; /* 웜톤 배경색 */
+            margin: 0;
+            padding: 0;
+        }
+
+        .header {
+            background-color: #FFF7E1; /* 웜톤 헤더 색상 */
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .header img {
+            width: 30px;
+            vertical-align: middle;
+        }
+
+        .header h1 {
+            display: inline-block;
+            margin-left: 10px;
+            font-size: 24px;
+            color: #A67B5B; /* 웜톤 텍스트 색상 */
+        }
+
+        .sitemap-container {
+            display: flex;
+            justify-content: space-evenly;
+            flex-wrap: wrap;
+            padding: 20px;
+            background-color: #FFF7E1;
+        }
+
+        .sitemap-section {
+            width: 30%;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .sitemap-section h3 {
+            background-color: #D5A478;
+            padding: 10px;
+            text-align: center;
+            font-size: 18px;
+            color: #FFF;
+        }
+
+        .sitemap-section ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            background-color: #FAF3E3;
+        }
+
+        .sitemap-section ul li {
+            margin: 10px 0;
+            padding: 5px 0;
+            text-align: center;
+            transition: background-color 0.3s;
+        }
+
+        .sitemap-section ul li:hover {
+            background-color: #FFF7E1;
+        }
+
+        .sitemap-section ul li a {
+            text-decoration: none;
+            color: #A67B5B;
+            font-weight: bold;
+            transition: color 0.3s, transform 0.3s;
+        }
+
+        .sitemap-section ul li a:hover {
+            color: #D5A478;
+            transform: scale(1.05);
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #FFF7E1;
+            border-top: 1px solid #ddd;
+            color: #A67B5B;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <img src="/static/logo/logo.png" alt="logo">
+    <h1>사이트맵</h1>
+</div>
+
+<div class="sitemap-container">
+    <!-- 동물 관련 -->
+    <div class="sitemap-section">
+        <h3>동물 관리</h3>
+        <ul>
+            <li><a href="/animals/register1">동물 등록</a></li>
+            <li><a href="/animals/list">동물 목록</a></li>
+            <li><a href="/animals/modify/{id}">동물 수정</a></li>
+            <li><a href="/animals/detail/{id}">동물 상세 정보</a></li>
+        </ul>
+    </div>
+
+    <!-- 입양 관련 -->
+    <div class="sitemap-section">
+        <h3>입양 관리</h3>
+        <ul>
+            <li><a href="/adoptions/guideApplication/{id}">입양 가이드 신청</a></li>
+            <li><a href="/adoptions/application">입양 신청</a></li>
+        </ul>
+    </div>
+
+    <!-- 문의 관련 -->
+    <div class="sitemap-section">
+        <h3>문의 관리</h3>
+        <ul>
+            <li><a href="/inquiry/list">문의 목록</a></li>
+            <li><a href="/inquiry/new">문의 등록</a></li>
+            <li><a href="/inquiry/detail/{id}">문의 상세 정보</a></li>
+            <li><a href="/inquiry/edit/{id}">문의 수정</a></li>
+        </ul>
+    </div>
+
+    <!-- 후원 관련 -->
+    <div class="sitemap-section">
+        <h3>후원 관리</h3>
+        <ul>
+            <li><a href="/donation/list">후원 목록</a></li>
+            <li><a href="/donation/form">후원 신청</a></li>
+        </ul>
+    </div>
+
+    <!-- 보호소 관련 -->
+    <div class="sitemap-section">
+        <h3>보호소 관리</h3>
+        <ul>
+            <li><a href="/shelters/register">보호소 등록</a></li>
+            <li><a href="/shelters/management">보호소 관리</a></li>
+            <li><a href="/shelters/info/{id}">보호소 정보</a></li>
+        </ul>
+    </div>
+
+    <!-- 봉사 활동 관련 -->
+    <div class="sitemap-section">
+        <h3>봉사 활동</h3>
+        <ul>
+            <li><a href="/volunteers/list">봉사 목록</a></li>
+            <li><a href="/volunteers/service/register">봉사 일정 등록</a></li>
+            <li><a href="/volunteers/detail/{id}">봉사 상세 정보</a></li>
+        </ul>
+    </div>
+
+    <!-- 관리자 관련 -->
+    <div class="sitemap-section">
+        <h3>관리자</h3>
+        <ul>
+            <li><a href="/superadmin/admin/dashboard">관리자 대시보드</a></li>
+        </ul>
+    </div>
+
+    <!-- 사용자 관련 -->
+    <div class="sitemap-section">
+        <h3>사용자</h3>
+        <ul>
+            <li><a href="/users/register">회원가입</a></li>
+            <li><a href="/users/login">로그인</a></li>
+            <li><a href="/users/logout">로그아웃</a></li>
+            <li><a href="/users/profile">프로필 보기</a></li>
+        </ul>
+    </div>
+
+    <!-- 마이페이지 -->
+    <div class="sitemap-section">
+        <h3>마이페이지</h3>
+        <ul>
+            <li><a href="/myPage/list">마이페이지</a></li>
+        </ul>
+    </div>
+</div>
+
+<div class="footer">
+    &copy; 2024 동물 보호 시스템
+</div>
+
+</body>
+</html>

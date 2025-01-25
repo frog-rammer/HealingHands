@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>일시후원 신청</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #FAF0DC; /* 전체 배경을 부드러운 웜톤으로 설정 */
+        }
+        .container {
+            width: 700px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #FFF6E0; /* 부드러운 웜톤 배경 */
+            border-radius: 10px; /* 둥근 모서리 */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            text-align: center;
+            color: #bfaa80; /* 제목 색상 */
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #FFF3D6; /* 테이블 배경색 */
+            border-radius: 8px; /* 둥근 모서리 */
+            overflow: hidden;
+        }
+        th, td {
+            padding: 12px;
+            border: 1px solid #E6CC9B; /* 테두리 색상 */
+            text-align: left;
+            vertical-align: middle;
+        }
+        th {
+            background-color: #DBB87C; /* 헤더 색상 */
+            color: #FFF;
+        }
+        td {
+            background-color: #FFF8E3; /* 셀 배경 색상 */
+        }
+        .input-field {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            border: 1px solid #DBB87C; /* 입력 필드 테두리 */
+            border-radius: 8px; /* 둥근 모서리 */
+            background-color: #FFFBE8; /* 입력 필드 배경 */
+        }
+        .btn-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .btn {
+            width: 200px;
+            padding: 10px 20px;
+            border: 1px solid #BF9A60; /* 버튼 테두리 */
+            background-color: #bfaa80; /* 버튼 배경색 */
+            color: #FFF;
+            cursor: pointer;
+            margin: 5px;
+            border-radius: 8px; /* 둥근 모서리 */
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .btn:hover {
+            background-color: #A88A57; /* 버튼 호버 색상 */
+            color: #FFF;
+        }
+    </style>
+
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script src="https://cdn.iamport.kr/js/iamport.payment-1.2.0.js"></script>
+    <script>
+        var IMP = window.IMP;
+        IMP.init("imp17586682"); // 아임포트에서 발급받은 가맹점 식별 코드
+
+        function processPayment() {
+            const formData = $('#donationForm').serializeArray();
+
+            // 각 필드에 대해 안전하게 접근 (값이 없는 경우 기본값 설정)
+            const amount = formData.find(item => item.name === 'amount')?.value || 0;
+            const userName = formData.find(item => item.name === 'userName')?.value || '';
+            const userEmail = formData.find(item => item.name === 'email')?.value || '';
+            const userPhone = formData.find(item => item.name === 'phone')?.value || '';
+            const userId = formData.find(item => item.name === 'userId')?.value || '';
+            const shelterName = formData.find(item => item.name === 'shelterName')?.value || '';
+            const paymentMethod = formData.find(item => item.name === 'paymentMethod')?.value || '';
+
+            // 필수 값 체크
+            if (!amount || !userName || !userEmail || !userPhone || !userId || !shelterName || !paymentMethod) {
+                alert("모든 값을 입력해 주세요.");
+                return;
+            }
+
+            // 계좌이체 선택 시 계좌번호 팝업 표시
+            if (paymentMethod === 'bank_transfer') {
+                alert("계좌이체를 선택하셨습니다.\n\n계좌번호: 123-456-7890\n은행명: 우리은행\n\n입금 확인 후 후원 처리가 완료됩니다.");
+                return;
+            }
+
+            IMP.request_pay({
+                pg: "html5_inicis",  // 실제 PG사 코드로 대체 (예: "kakao", "naverpay" 등)
+                pay_method: "card",
+                merchant_uid: `payment-${crypto.randomUUID()}`,
+                name: "보호소 후원 신청",
+                amount: amount,
+                buyer_email: userEmail,
+                buyer_name: userName,
+                buyer_tel: userPhone
+            }, function (rsp) {
+                console.log("결제 응답:", rsp);
+                if (rsp.success) {
+                    // 결제 성공 시 서버에 결제 정보를 전송
+                    $.ajax({
+                        type: 'POST',
+                        url: '/donation/form/register',
+                        contentType: 'application/json', // 요청의 Content-Type 설정
+                        data: JSON.stringify({
+                            userId: formData.find(item => item.name === 'userId').value,
+                            userName: userName,
+                            phone: userPhone,
+                            email: userEmail,
+                            shelterName: formData.find(item => item.name === 'shelterName').value,
+                            amount: parseFloat(amount),
+                            paymentMethod: formData.find(item => item.name === 'paymentMethod').value,
+                            transactionId: rsp.merchant_uid,
+                            impUid: rsp.imp_uid  // imp_uid 추가
+                        }),
+                        success: function(data) {
+                            alert("후원 등록 성공!");
+                            location.href = "/donation/list";  // 후원 내역 페이지로 이동
+                        },
+                        error: function() {
+                            alert("후원 등록 실패");
+                        }
+                    });
+                } else {
+                    alert("결제 실패: " + rsp.error_msg);
+                }
+            });
+        }
+    </script>
+</head>
+
+<body>
+<div th:replace="import/header :: header"></div> <!-- 헤더 임포트 -->
+
+<div class="container">
+    <h2>후원 신청양식</h2>
+    <form id="donationForm" method="post" th:action="@{/donation/register}" th:object="${donationDTO}">
+        <table>
+            <tr>
+                <th>후원방법</th>
+                <td>
+                    <label>
+                        <select th:field="*{paymentMethod}" class="input-field">
+                            <option value="credit_card">신용 카드</option>
+                            <option value="bank_transfer">계좌 이체</option>
+                        </select>
+                    </label>
+                </td>
+                <th>후원받는 보호센터</th>
+                <td>
+                    <label>
+                        <select th:field="*{shelterName}" class="input-field">
+                            <option value="">:: 보호센터 선택 ::</option>
+                            <option th:each="shelterDTO : ${shelterDTOs}" th:value="${shelterDTO.shelterId}" th:text="${shelterDTO.shelterName}"></option>
+                        </select>
+                    </label>
+                </td>
+            </tr>
+            <tr>
+                <th>성명</th>
+                <td>
+                    <label>
+                        <input type="text" th:field="*{userName}" class="input-field" readonly />
+                    </label>
+                </td>
+                <th>후원금액</th>
+                <td>
+                    <label>
+                        <select th:field="*{amount}" class="input-field">
+                            <option value="">:: 후원 금액 선택 ::</option>
+                            <option value="100">100원</option>
+                            <option value="5000">5,000원</option>
+                            <option value="10000">10,000원</option>
+                            <option value="30000">30,000원</option>
+                            <option value="50000">50,000원</option>
+                            <option value="100000">100,000원</option>
+                            <option value="200000">200,000원</option>
+                        </select>
+                    </label>
+                </td>
+            </tr>
+            <tr>
+                <th>아이디</th>
+                <td colspan="3">
+                    <label>
+                        <input type="text" th:field="*{userId}" class="input-field" readonly />
+                    </label>
+                </td>
+            </tr>
+            <tr>
+                <th>연락처</th>
+                <td colspan="3">
+                    <label>
+                        <input type="text" th:field="*{phone}" class="input-field" readonly />
+                    </label>
+                </td>
+            </tr>
+            <tr>
+                <th>이메일</th>
+                <td colspan="3">
+                    <label>
+                        <input type="email" th:field="*{email}" class="input-field" readonly />
+                    </label>
+                </td>
+            </tr>
+        </table>
+        <div class="btn-container">
+            <button type="button" class="btn" onclick="processPayment()">결제</button>
+            <button type="reset" class="btn">취소</button>
+        </div>
+    </form>
+</div>
+
+<div th:replace="import/footer :: footer"></div> <!-- 푸터 임포트 -->
+</body>
+</html>

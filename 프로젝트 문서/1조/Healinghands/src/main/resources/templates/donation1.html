@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>후원 게시판</title>
+  <style>
+    /* 전체 페이지 스타일 */
+    body {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #FAF3E3; /* 웜톤 배경색 */
+    }
+
+    /* 메인 콘텐츠 스타일 */
+    #main-content {
+      width: 66.67%;
+      margin: 20px auto;
+      padding: 20px;
+      background-color: #FFF7E1; /* 콘텐츠 배경 */
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+    }
+
+    /* 후원 게시판 컨테이너 스타일 */
+    .donation-board-container {
+      width: 100%;
+      text-align: center;
+    }
+
+    /* 테이블 스타일 */
+    .donation-board {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      border-radius: 8px; /* 둥근 모서리 */
+    }
+
+    .donation-board th,
+    .donation-board td {
+      padding: 12px 15px;
+      text-align: left;
+    }
+
+    /* 테이블 헤더 스타일 */
+    .donation-board th {
+      background-color: #db9a1a; /* 메인 웜톤 색상 */
+      color: #ffffff;
+      font-weight: bold;
+    }
+
+    /* 테이블 데이터 스타일 */
+    .donation-board td {
+      background-color: #FFF3D6; /* 데이터 셀 배경색 */
+      color: #5D4037; /* 텍스트 색상 */
+    }
+
+    /* 짝수 줄 배경색 */
+    .donation-board tr:nth-child(even) td {
+      background-color: #FFECD3;
+    }
+
+    /* 마우스 호버 시 배경색 */
+    .donation-board tr:hover td {
+      background-color: #FFE5B4;
+    }
+
+    /* 후원 신청 버튼 스타일 */
+    #jyking {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 10px;
+    }
+
+    .register-btn {
+      padding: 10px 20px;
+      background-color: #db9a1a;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: background-color 0.3s;
+      font-size: 16px;
+    }
+
+    .register-btn:hover {
+      background-color: #c68d16;
+    }
+
+    /* 페이지네이션 스타일 */
+    .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .pagination-btn {
+      padding: 8px 16px;
+      background-color: #db9a1a;
+      color: #ffffff;
+      border: none;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: background-color 0.3s;
+    }
+
+    .pagination-btn:hover {
+      background-color: #c68d16;
+    }
+
+    /* 페이지 정보 텍스트 스타일 */
+    .pagination-info {
+      font-weight: bold;
+      color: #5D4037;
+    }
+  </style>
+</head>
+<body>
+
+<div th:replace="import/header :: header"></div> <!-- 헤더 임포트 -->
+
+<main id="main-content">
+  <!-- 후원 게시판 제목 및 신청 버튼 -->
+  <div class="donation-board-container">
+    <h1>후원 내역 현황</h1>
+    <div id="jyking">
+      <a th:href="@{/donation/form}">
+        <button class="register-btn">후원 신청하기</button>
+      </a>
+    </div>
+
+    <!-- 후원 게시판 테이블 -->
+    <table class="donation-board">
+      <thead>
+      <tr>
+        <th>ID (앞 2글자 외 *처리)</th>
+        <th>후원금액</th>
+        <th>날짜</th>
+        <th>보호소 명칭</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="donation : ${donationPage.content}">
+        <td th:text="${#strings.substring(donation.userId, 0, 2) + '****'}"></td>
+        <td th:text="${donation.amount}"></td>
+        <td th:text="${#temporals.format(donation.donatedAt, 'yyyy-MM-dd HH:mm')}"></td>
+        <td th:text="${donation.shelterName}"></td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 페이지네이션 네비게이션 -->
+  <div class="pagination">
+    <a th:if="${currentPage > 0}" th:href="@{/donation/list(page=${currentPage - 1}, size=${donationPage.size})}">
+      <button class="pagination-btn">이전</button>
+    </a>
+
+    <span class="pagination-info" th:text="'페이지 ' + (${currentPage + 1}) + ' / ' + ${totalPages}"></span>
+
+    <a th:if="${currentPage + 1 < totalPages}" th:href="@{/donation/list(page=${currentPage + 1}, size=${donationPage.size})}">
+      <button class="pagination-btn">다음</button>
+    </a>
+  </div>
+</main>
+
+<div th:replace="import/footer :: footer"></div> <!-- 푸터 임포트 -->
+
+</body>
+</html>

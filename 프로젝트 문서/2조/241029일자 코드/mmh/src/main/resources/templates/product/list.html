@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<th:block th:replace="~{/layout/basic :: setContent(~{this::content})}">
+    <th:block th:fragment="content">
+        <h1 class="mt-4">상품 게시판
+            <span>
+                <a th:href="@{/product/register}">
+                    <button class="btn btn-outline-primary" type="button">REGISTER</button>
+                </a>
+            </span>
+        </h1>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>이미지</th>
+                <th>상품명</th>
+                <th>사이즈</th>
+                <th>제작기간</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="dto : ${result.dtoList}">
+                <td>
+                    <a th:href="@{/product/read(productNo=${dto.productNo})}">
+                        [[${dto.productNo}]]
+                    </a>
+                </td>
+                <td><img th:if="${dto.imageDTOList.size() > 0 && dto.imageDTOList[0].path != null }"
+                         th:src="|/display?fileName=${dto.imageDTOList[0].getThumbnailURL()}|" ></td>
+                <td>[[${dto.product_name}]]</td>
+                <td>[[${dto.product_size}]]</td>
+                <td>[[${dto.product_period}]]</td>
+            </tr>
+            </tbody>
+        </table>
+
+        <ul class="pagination h-100 justify-content-center align-items-center">
+            <li class="page-item " th:if="${result.prev}">
+                <a class="page-link" tabindex="-1"
+                   th:href="@{/product/list(page=${result.start -1} ) }">Previous</a>
+            </li>
+
+            <li th:class=" 'page-item ' + ${result.page == page?'active':''} " th:each="page: ${result.pageList}">
+                <a class="page-link"
+                   th:href="@{/product/list(page=${page} )}">
+                    [[${page}]]
+                </a>
+            </li>
+
+            <li class="page-item" th:if="${result.next}">
+                <a class="page-link"
+                   th:href="@{/product/list(page=${result.end +1})}">Next</a>
+            </li>
+        </ul>
+
+    </th:block>
+</th:block>

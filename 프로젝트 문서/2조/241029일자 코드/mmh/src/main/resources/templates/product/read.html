@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<th:block th:replace="~{/layout/basic :: setContent(~{this::content})}">
+  <th:block th:fragment="content">
+    <h1 class="mt-4">상품 정보</h1>
+    <div>
+      <label>상품명</label>
+      [[${dto.product_name}]]
+    </div>
+    <div>
+      <label>이미지</label>
+      <img th:if="${dto.imageDTOList.size() > 0 && dto.imageDTOList[0].path != null }"
+           th:src="|/display?fileName=${dto.imageDTOList[0].getImageURL()}|" >
+    </div>
+
+    <div>
+      <label>사이즈</label>
+      [[${dto.product_size}]]
+    </div>
+
+    <div>
+      <label>제작기간</label>
+      [[${dto.product_period}]]
+    </div>
+
+    <div>
+      <label>상품 설명</label>
+      [[${dto.product_desc}]]
+    </div>
+    <a th:href="@{/product/modify(productNo=${dto.productNo}, page=${requestDTO.page})}">
+      <button class="btn btn-primary" type="button">수정</button>
+    </a>
+
+    <a th:href="@{/product/list(page=${requestDTO.page})}">
+      <button class="btn btn-info" type="button">리스트</button>
+    </a>
+
+  </th:block>
+</th:block>

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>문의 상세 정보</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #FAF3E3; /* 배경을 웜톤으로 변경 */
+        }
+
+        .container {
+            width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #FFF7E1; /* 밝은 웜톤 배경색 */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        h2 {
+            color: #A67B5B; /* 웜톤 헤더 색상 */
+            text-align: center;
+        }
+
+        .inquiry-details {
+            margin-bottom: 20px;
+        }
+
+        .inquiry-details p {
+            margin: 10px 0;
+            color: #5B4636; /* 텍스트 색상 */
+        }
+
+        .top-btn-container,
+        .btn-container {
+            text-align: right;
+            margin: 20px 0;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: 1px solid #D5A478;
+            background-color: #FAE1C4; /* 웜톤 버튼 색상 */
+            color: #5B4636; /* 버튼 텍스트 색상 */
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s, color 0.3s;
+            margin: 5px;
+        }
+
+        .btn:hover {
+            background-color: #D5A478; /* 버튼 호버 시 웜톤 색상 */
+            color: #FFF;
+        }
+
+        .answer-section {
+            margin-top: 30px;
+            background-color: #FDF1E2; /* 답변 섹션 배경 */
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            margin-bottom: 15px;
+            border: 1px solid #D5A478;
+            border-radius: 5px;
+            background-color: #FAF3E3;
+            color: #5B4636;
+            resize: vertical;
+        }
+    </style>
+</head>
+<body>
+<div th:replace="import/header :: header"></div> <!-- 헤더 임포트 -->
+<div class="container" th:object="${inquiryDTO}">
+    <!-- 목록으로 버튼을 오른쪽 위로 -->
+    <div class="top-btn-container">
+        <a th:href="@{/inquiry/list}"><button class="btn">목록으로</button></a>
+    </div>
+
+    <h2>문의 상세 정보</h2>
+    <div class="inquiry-details">
+        <p><strong>제목:</strong> <span th:text="${inquiryDTO.title}">입양 문의에 대한 질문</span></p>
+        <p><strong>유형:</strong> <span th:text="${inquiryDTO.type}">입양 문의</span></p>
+        <p><strong>내용:</strong> <span th:text="${inquiryDTO.content}">입양 절차에 대한 자세한 정보를 알고 싶습니다.</span></p>
+    </div>
+
+    <!-- 글쓴이에게 보여지는 수정 버튼 -->
+    <div class="btn-container" id="writerActions">
+        <a th:href="@{/inquiry/edit/{id}(id=${inquiryDTO.inquiryId})}"><button class="btn" onclick="editInquiry()">수정하기</button></a>
+    </div>
+
+    <!-- 관리자에게만 보이는 답변 작성 영역 -->
+    <div class="answer-section" id="adminActions" style="display:none;">
+        <h3>관리자 답변</h3>
+        <div class="form-group">
+            <textarea id="adminReply" rows="5" placeholder="답변을 입력하세요"></textarea>
+        </div>
+        <div class="btn-container">
+            <button class="btn" onclick="submitReply()">답변하기</button>
+        </div>
+    </div>
+</div>
+    <div th:replace="import/footer :: footer"></div> <!-- 푸터 임포트 -->
+    <script>
+        // 현재 로그인한 사용자가 글쓴이인지 관리자 인지 여부를 체크하는 변수 (실제론 서버에서 처리해야 함)
+        var isWriter = true;  // 글쓴이일 경우 true
+        var hasAnswer = true; // 답변이 존재할 경우 true
+
+        // 페이지 로드 시 조건에 따라 보이는 영역 설정
+        window.onload = function() {
+            const userType = sessionStorage.getItem("userType");
+            if (userType === "admin") {
+                var isAdmin = true;   // 관리자인 경우 true
+            }
+            if (isWriter) {
+                document.getElementById('writerActions').style.display = 'block';
+            } else {
+                document.getElementById('writerActions').style.display = 'none';
+            }
+
+            if (isAdmin) {
+                document.getElementById('adminActions').style.display = 'block';
+                if (hasAnswer) {
+                    document.getElementById('adminOutput').style.display = 'block';
+                    document.getElementById('answerContent').innerText = '여기에 실제 답변이 표시됩니다.'; // 서버로부터 답변을 불러오는 부분
+                }
+            }
+        };
+
+        // 수정하기 버튼 클릭 시 실행되는 함수
+        function editInquiry() {
+            alert('문의 수정 페이지로 이동합니다.');
+            // 수정 페이지로 이동하거나 해당 기능 추가 필요
+        }
+
+        // 답변하기 버튼 클릭 시 실행되는 함수
+        function submitReply() {
+            var reply = document.getElementById('adminReply').value;
+            if (reply) {
+                alert('답변이 등록되었습니다: ' + reply);
+                // 실제로는 서버에 답변 내용을 저장하는 코드가 추가되어야 함
+            } else {
+                alert('답변 내용을 입력하세요.');
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>제조업체 리스트</title>
+  <style>
+    body {
+      margin: 20px;
+      font-family: Arial, sans-serif;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+    .btn {
+      padding: 5px 10px;
+      margin-top: 5px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .btn-success {
+      background-color: #28a745;
+    }
+    .btn:hover {
+      opacity: 0.8;
+    }
+  </style>
+</head>
+<body>
+<h1>제조업체 리스트</h1>
+<table>
+  <thead>
+  <tr>
+    <th>ID</th>
+    <th>이름</th>
+    <th>상태</th>
+    <th>작업</th>
+  </tr>
+  </thead>
+  <tbody>
+  <th:block th:each="manufacturer : ${manufacturers}">
+    <tr>
+      <td th:text="${manufacturer.id}"></td>
+      <td th:text="${manufacturer.name}"></td>
+      <td th:text="${manufacturer.status}"></td>
+      <td>
+        <form th:action="@{/admin/approve/{manuMemId}(manuMemId=${manufacturer.id})}" method="post">
+          <button type="submit" class="btn btn-success">승인</button>
+        </form>
+      </td>
+    </tr>
+  </th:block>
+  </tbody>
+</table>
+<a href="/admin" class="btn">뒤로 가기</a>
+</body>
+</html>

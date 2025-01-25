@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>봉사 게시판</title>
+    <style>
+        /* 전체 페이지 스타일 */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #FAF3E3; /* 배경색을 웜톤으로 설정 */
+            color: #5D4037; /* 기본 텍스트 색상 */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            width: 100%;
+            padding-top: 20px;
+        }
+
+        /* 헤더와 푸터 스타일 */
+        #header, #footer {
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* 메인 컨테이너 */
+        #main-container {
+            max-width: 800px;
+            width: 100%;
+            background-color: #FFF8E1; /* 컨테이너 배경 웜톤 설정 */
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        /* 제목 스타일 */
+        #post-title {
+            font-size: 24px;
+            color: #A67B5B; /* 웜톤 텍스트 색상 */
+            margin: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* 게시글 정보 */
+        .post-meta {
+            font-size: 14px;
+            color: #7E6143; /* 웜톤 텍스트 색상 */
+            margin-left: 20px;
+        }
+
+        /* 테이블 스타일 */
+        #details-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        #details-table th, #details-table td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: left;
+        }
+
+        #details-table th {
+            background-color: #F5E6D3; /* 테이블 헤더 배경 웜톤 */
+            color: #6D4C41;
+        }
+
+        /* 섹션 스타일 */
+        .section {
+            margin: 20px 0;
+        }
+
+        /* 달력 및 이벤트 스타일 */
+        #calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            border: 1px solid #ddd;
+            padding: 10px;
+        }
+
+        .day {
+            border: 1px solid #ddd;
+            height: 100px;
+            position: relative;
+            background-color: #FFF7E1;
+        }
+
+        .day.highlight {
+            background-color: #D5E8D4; /* 하이라이트 색상 웜톤 */
+        }
+
+        .event {
+            position: absolute;
+            bottom: 5px;
+            left: 5px;
+            right: 5px;
+            background-color: #D5A478; /* 이벤트 배경 웜톤 */
+            color: white;
+            padding: 5px;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+
+        /* 버튼 컨테이너와 버튼 스타일 */
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            background-color: #D5A478; /* 웜톤 버튼 색상 */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #C09065; /* 버튼 hover 색상 */
+        }
+
+        .btn-apply {
+            background-color: #A67B5B; /* 신청 버튼 색상 웜톤 */
+        }
+
+        .btn-apply:hover {
+            background-color: #8E6A4D;
+        }
+
+        .btn-back {
+            background-color: #7E6143; /* 뒤로 가기 버튼 색상 웜톤 */
+        }
+
+        .btn-back:hover {
+            background-color: #6A5037;
+        }
+
+        /* 구분선 스타일 */
+        .separator {
+            margin: 20px 0;
+            border: 0;
+            border-top: 2px solid #ccc;
+        }
+
+        /* 연락처 정보 */
+        .contact-info {
+            list-style-type: none;
+            padding-left: 0;
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .contact-info li {
+            margin-right: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<header id="header" th:replace="import/header :: header"></header>
+
+<main id="main-container">
+    <header>
+        <h1 id="post-title">
+            <span th:text="${volunteerDTO.title}"></span>
+            <span class="post-meta">작성자: <span th:text="${volunteerDTO.userId}"></span> | 작성일: <span th:text="${#dates.format(#dates.createNow(), 'yyyy.MM.dd')}"></span></span>
+        </h1>
+    </header>
+    <hr class="separator">
+
+    <table id="details-table">
+        <tr>
+            <th>봉사기간</th>
+            <td th:text="${volunteerDTO.scheduledDate}"></td>
+        </tr>
+        <tr>
+            <th>모집인원</th>
+            <td th:text="${volunteerDTO.peopleLimit} + '명 / 일'"></td>
+        </tr>
+        <tr>
+            <th>봉사장소</th>
+            <td th:text="${shelter.address}"></td>
+        </tr>
+    </table>
+
+    <section class="section">
+        <h2>상세 내용</h2>
+        <p th:text="${volunteerDTO.description}"></p>
+    </section>
+
+    <hr class="separator">
+
+    <section class="section">
+        <h2>담당자 정보</h2>
+        <ul class="contact-info">
+            <li>이름: <span th:text="${user.username}"></span></li>
+            <li>연락처: <span th:text="${shelter.contactInfo}"></span></li>
+            <li>이메일: <span th:text="${user.email}"></span></li>
+        </ul>
+    </section>
+
+    <div class="button-container">
+        <button class="btn btn-apply" th:onclick="|location.href='@{/volunteers/app/{id}(id=${volunteerDTO.volunteerId})}'|">신청하기</button>
+        <button class="btn" th:if="${user.userId == volunteerDTO.userId}" th:onclick="|location.href='@{/volunteers/update/{id}(id=${volunteerDTO.volunteerId})}'|">봉사 일정 수정 하기</button>
+        <button class="btn btn-back" th:onclick="|location.href='@{/volunteers/list}'|">목록으로 돌아가기</button>
+    </div>
+</main>
+
+<footer id="footer" th:replace="import/footer :: footer"></footer>
+
+</body>
+</html>
