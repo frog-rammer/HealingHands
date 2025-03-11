@@ -8,7 +8,8 @@
             /* 전체 헤더 영역 스타일 */
             header {
                 border-bottom: 1px solid #ccc;
-                background-color: #edab1a;
+                padding: 20px;
+                background-color: #aa9476;
             }
 
             /* 상단 링크 영역 스타일 */
@@ -34,7 +35,7 @@
             }
 
             .top-links a {
-                color: #fff1d2;
+                color: #ffffff;
                 margin-left: 15px;
                 text-decoration: none;
                 font-weight: bold;
@@ -42,7 +43,7 @@
             }
 
             .top-links a:hover {
-                color: #333333;
+                color: #7c6b57;
             }
 
             /* 하단 네비게이션 메뉴 스타일 */
@@ -82,7 +83,7 @@
                 position: relative;
                 vertical-align: middle;
                 transform: perspective(1px) translateZ(0);
-                color: #fff1d2;
+                color: #ffffff;
                 font-size: 20px;
                 font-weight: bold;
                 padding: 10px 15px;
@@ -123,7 +124,8 @@
             #menu a:active:before {
                 transform: scaleY(1); /* Sweep To Top 효과 */
             }
-
+            .mainLogo-container{
+            }
             /* 아이콘 영역 스타일 */
             #icons {
                 display: flex;
@@ -134,7 +136,6 @@
                 width: 24px;
                 height: 24px;
                 cursor: pointer;
-                transition: transform 0.3s;
             }
 
             #icons #sitemap {
@@ -163,8 +164,10 @@
                 <img id="sitemap" src="/logo/sitemap.png" title="사이트맵 보기" alt="사이트맵 아이콘" onclick="location.href='/sitemap';">
             </div>
             <div class="logo-container">
-                <img id="mainLogo" src="/logo/logo.png" title="메인페이지로 이동" alt="메인 로고" onclick="location.href='/';">
-                <a href="/" title="메인 페이지로 이동" >날데려갈고양 널데려갈개</a>
+                <div class="mainLogo-container">
+                    <img id="mainLogo" src="/logo/logo.png" title="메인페이지로 이동" alt="메인 로고" onclick="location.href='/';">
+                </div>
+                <a href="/" title="메인 페이지로 이동" >날 데려갈 고양? 널 데려갈 개!</a>
             </div>
 
             <div>
