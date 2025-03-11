@@ -2,6 +2,9 @@
 
 팀 프로젝트 유기 동물 보호소 운영 웹 애플리케이션
 
+작업 당시 github 주소
+https://github.com/gustlr0923/b-portfolio
+
 작업인원 4명
   - 김승호 (팀장)
   - 김현식
