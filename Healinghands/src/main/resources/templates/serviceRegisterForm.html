@@ -2,72 +2,69 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>봉사활동 일정 등록</title>
     <style>
-        /* 공통 페이지 스타일 */
-        .page-body {
-            font-family: Arial, sans-serif;
-            background-color: #FAF3E3; /* 웜톤 배경 */
-            color: #5D4037;
+        body {
             display: flex;
             flex-direction: column;
-            align-items: center;
+            min-height: 100vh;
+            background: #FAF3E3;
             margin: 0;
-            padding: 20px;
-            width: 100%;
+            font-family: Arial, sans-serif;
+            color: #5b4b33;
         }
 
-        /* 헤더와 푸터 스타일 */
-        .header-container, .footer-container {
-            width: 100%;
-        }
-
-        /* 메인 컨테이너 스타일 */
         .form-wrapper {
             max-width: 600px;
-            width: 100%;
+            width: 90%;
+            margin: 40px auto;
             padding: 30px;
-            background-color: #FFF8E1; /* 폼 배경 */
+            background-color: #f3ede7;
             border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            margin: 20px 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
         }
 
-        /* 페이지 제목 스타일 */
         .page-title {
             text-align: center;
-            color: #db9a1a; /* 제목 색상 */
+            color: #5b4b33;
             font-size: 24px;
-            margin-top: 20px;
+            margin-top: 30px;
         }
 
-        /* 폼 요소 스타일 */
         .form-label {
             display: block;
             font-weight: bold;
-            color: #6D4C41;
+            color: #5b4b33;
             margin-bottom: 8px;
         }
 
-        .form-input, .form-textarea, .form-select {
+        .form-input,
+        .form-textarea,
+        .form-select {
             width: 100%;
             padding: 12px;
             margin-bottom: 20px;
-            border: 1px solid #bfaa80;
+            border: 1px solid #b8a992;
             border-radius: 8px;
-            background-color: #FFF7E1;
+            background-color: #f6efdd;
             font-size: 15px;
+            color: #5b4b33;
             box-sizing: border-box;
         }
 
-        /* 버튼 컨테이너와 버튼 스타일 */
+        .form-textarea {
+            resize: vertical;
+        }
+
         .button-container {
             display: flex;
             justify-content: space-between;
         }
 
-        .btn-submit, .btn-cancel {
+        .btn-submit,
+        .btn-cancel {
             width: 48%;
             padding: 10px;
             border: none;
@@ -79,21 +76,23 @@
         }
 
         .btn-submit {
-            background-color: #bfaa80;
+            background-color: #7a6850; /* 딥 브라운 */
         }
 
         .btn-submit:hover {
-            background-color: #edab1a;
+            background-color: #5b4b33;
         }
 
         .btn-cancel {
-            background-color: #db9a1a;
+            background-color: #a89172; /* 회갈색 느낌 */
         }
 
         .btn-cancel:hover {
-            background-color: #bfaa80;
+            background-color: #7a6850;
         }
     </style>
+
+
 </head>
 <body class="page-body">
 

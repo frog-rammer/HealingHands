@@ -26,8 +26,8 @@ import java.util.stream.Collectors;
 public class AnimalServiceImpl implements AnimalService {
 
     private final AnimalRepository animalRepository;
-    private final String uploadDir = "src/main/resources/static/images/";
-
+//    private final String uploadDir = "src/main/resources/static/images/";
+    private final String uploadDir = "/usr/local/healinghands/uploads/";
     @Autowired
     public AnimalServiceImpl(AnimalRepository animalRepository) {
         this.animalRepository = animalRepository;

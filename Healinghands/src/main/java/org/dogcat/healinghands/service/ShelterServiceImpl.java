@@ -31,7 +31,8 @@ public class ShelterServiceImpl implements ShelterService {
     @Autowired
     private WaitingForShelterAppRepository waitingForShelterAppRepository; // 추가
 
-    private final String UPLOAD_DIR = "src/main/resources/static/images/"; // 파일 저장 경로
+//    private final String UPLOAD_DIR = "src/main/resources/static/images/"; // 윈도우 파일 저장 경로
+   private final String UPLOAD_DIR = "/usr/local/healinghands/uploads/";
 
     /*
      * 보호소 신청

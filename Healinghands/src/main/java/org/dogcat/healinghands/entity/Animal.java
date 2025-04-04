@@ -20,7 +20,7 @@ public class Animal {
     private String shelterId;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "shelter_id", insertable = false, updatable = false)
+    @JoinColumn(name = "shelter_id", referencedColumnName = "shelterId", insertable = false, updatable = false)
     private Shelter shelter;
 
     private String name;

@@ -59,13 +59,8 @@ public class ShelterController {
         UserDTO user = (UserDTO) session.getAttribute("user");
 
         shelterDTO.setShelterId(user.getUserId());
-        System.out.println(shelterDTO.getAddress());
-        System.out.println(shelterDTO.getAddress());
         System.out.println(shelterDTO.getAddress());System.out.println(shelterDTO.getAddress());
-        System.out.println(shelterDTO.getAddress());
-        System.out.println(shelterDTO.getAddress());
-        System.out.println(shelterDTO.getAddress());
-        System.out.println(shelterDTO.getAddress());
+
         // ShelterService를 사용하여 보호소 등록
         ShelterDTO insertForWaitShelterApp = shelterService.insertWaitShelter(shelterDTO, shelterPhoto);
 

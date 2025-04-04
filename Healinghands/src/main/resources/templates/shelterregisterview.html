@@ -147,7 +147,7 @@
 <div th:replace="import/header :: header"></div> <!-- 헤더 임포트 -->
 <div class="container mt-5">
     <h2>보호소 신청</h2>
-    <form action="/shelters/register" method="post" enctype="multipart/form-data" th:object="${shelterDTO}">
+    <form th:action="@{/shelters/register}" method="post" enctype="multipart/form-data" th:object="${shelterDTO}">
         <div class="form-group">
             <label for="shelterName">보호소 이름</label>
             <input type="text" class="form-control" id="shelterName" name="shelterName" th:field="*{shelterName}" required>
